@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LavSofá - Gerador de Orçamentos</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+
+    <div class="card shadow">
+        <div class="card-header">
+            <h3 class="mb-0">🛋️ LavSofá - Gerador de Orçamentos</h3>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-8">
+                    <label class="form-label">
+                        Serviço
+                    </label>
+
+                    <select
+                        id="item"
+                        class="form-select"
+                    ></select>
+                </div>
+
+                <div class="col-md-4 d-grid">
+                    <label class="form-label">&nbsp;</label>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="adicionarItem()"
+                    >
+                        Adicionar Item
+                    </button>
+                </div>
+
+            </div>
+
+            <hr>
+
+            <h5>Itens adicionados</h5>
+
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th width="180">Valor</th>
+                        <th width="200">Ações</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="tabelaItens">
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 class="mt-3">
+                Total:
+                <span id="total">
+                    R$ 0,00
+                </span>
+            </h4>
+
+            <hr>
+
+            <div class="d-grid gap-2">
+                <button
+                    class="btn btn-success"
+                    onclick="gerarMensagem()"
+                >
+                    Gerar Orçamento
+                </button>
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="copiarTexto()"
+                >
+                    Copiar Texto
+                </button>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="limparOrcamento()"
+                >
+                    Limpar
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <label class="form-label">
+                    Mensagem
+                </label>
+
+                <textarea
+                    id="resultado"
+                    class="form-control"
+                    rows="15"
+                ></textarea>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+const catalogo = {
+    "Sofá 2L Retrátil": 229.90,
+    "Sofá 2L Fixo": 209.90,
+    "Sofá 3L Retrátil": 269.90,
+    "Sofá 3L Fixo": 249.90,
+    "Sofá 4L Retrátil": 329.90,
+    "Poltrona": 89.90,
+    "Puff": 49.90,
+    "Cadeira": 29.90,
+    "Colchão Solteiro": 149.90,
+    "Colchão Casal": 189.90,
+    "Colchão Queen": 209.90,
+    "Colchão King": 229.90,
+    "Cabeceira": 99.90
+};
+
+let itens = [];
+
+
+function moeda(valor) {
+    return valor.toLocaleString(
+        'pt-BR',
+        {
+            style: 'currency',
+            currency: 'BRL'
+        }
+    );
+}
+
+
+function carregarCatalogo() {
+    const select = document.getElementById('item');
+
+    Object.keys(catalogo)
+        .sort()
+        .forEach(item => {
+
+            const option =
+                document.createElement('option');
+
+            option.value = item;
+            option.textContent = item;
+
+            select.appendChild(option);
+        });
+}
+
+
+function adicionarItem() {
+    const nome =
+        document.getElementById('item').value;
+
+    itens.push({
+        nome,
+        valor: catalogo[nome]
+    });
+
+    atualizarTabela();
+}
+
+
+function removerItem(indice) {
+    itens.splice(indice, 1);
+    atualizarTabela();
+}
+
+
+function editarValor(indice) {
+    const novoValor =
+        prompt(
+            'Novo valor:',
+            itens[indice].valor.toFixed(2)
+        );
+
+    if (novoValor === null) {
+        return;
+    }
+
+    const valor =
+        parseFloat(
+            novoValor.replace(',', '.')
+        );
+
+    if (isNaN(valor)) {
+        alert('Valor inválido.');
+        return;
+    }
+
+    itens[indice].valor = valor;
+
+    atualizarTabela();
+}
+
+
+function atualizarTabela() {
+    const tbody =
+        document.getElementById(
+            'tabelaItens'
+        );
+
+    tbody.innerHTML = '';
+
+    let total = 0;
+
+    itens.forEach((item, indice) => {
+
+        total += item.valor;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${item.nome}</td>
+
+                <td>
+                    ${moeda(item.valor)}
+                </td>
+
+                <td>
+                    <button
+                        class="btn btn-sm btn-warning"
+                        onclick="editarValor(${indice})"
+                    >
+                        Editar
+                    </button>
+
+                    <button
+                        class="btn btn-sm btn-danger"
+                        onclick="removerItem(${indice})"
+                    >
+                        Remover
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    document.getElementById(
+        'total'
+    ).innerText = moeda(total);
+}
+
+
+function calcularValor(
+    valor,
+    parcelas
+) {
+
+    const taxaVenda = 2.99;
+
+    const taxas = {
+        3: 8.29,
+        4: 9.65,
+        5: 10.98
+    };
+
+    const taxa =
+        taxaVenda +
+        taxas[parcelas];
+
+    return valor /
+        (1 - taxa / 100);
+}
+
+
+function gerarMensagem() {
+
+    if (itens.length === 0) {
+        alert(
+            'Adicione pelo menos um item.'
+        );
+        return;
+    }
+
+    const total =
+        itens.reduce(
+            (soma, item) =>
+                soma + item.valor,
+            0
+        );
+
+    const agrupados = {};
+
+    itens.forEach(item => {
+
+        const chave =
+            `${item.nome}-${item.valor}`;
+
+        if (!agrupados[chave]) {
+            agrupados[chave] = {
+                nome: item.nome,
+                quantidade: 0
+            };
+        }
+
+        agrupados[chave]
+            .quantidade++;
+    });
+
+    const itensTexto =
+        Object.values(agrupados)
+            .map(item => {
+
+                if (item.quantidade > 1) {
+                    return `• ${item.nome} (${item.quantidade}x)`;
+                }
+
+                return `• ${item.nome}`;
+            })
+            .join('\n');
+
+    const valor3 =
+        (
+            calcularValor(
+                total,
+                3
+            ) / 3
+        ).toFixed(2);
+
+    const valor4 =
+        (
+            calcularValor(
+                total,
+                4
+            ) / 4
+        ).toFixed(2);
+
+    const valor5 =
+        (
+            calcularValor(
+                total,
+                5
+            ) / 5
+        ).toFixed(2);
+
+    const texto = `🛋️ *ORÇAMENTO*
+
+O nosso serviço é profissional, seguro e especializado.
+
+Sabemos que receber alguém em casa exige *confiança*. Por isso, contamos com um técnico altamente capacitado para garantir um *resultado impecável*, além de um atendimento que te acompanha do agendamento até a finalização do serviço.
+
+Nosso objetivo é simples: entregar *qualidade*, *segurança* e um *resultado* que te faça querer contar conosco sempre que precisar. 😊
+
+*Abaixo segue o orçamento.*
+
+*Itens solicitados:*
+
+${itensTexto}
+
+💳 *Parcelamento no cartão de crédito*
+
+3x de R$ ${valor3}
+4x de R$ ${valor4}
+5x de R$ ${valor5}
+
+💰 *Oferta à vista*
+
+R$ ${total.toFixed(2)} no PIX ou dinheiro
+`;
+
+    document.getElementById(
+        'resultado'
+    ).value = texto;
+}
+
+
+function copiarTexto() {
+    const texto =
+        document.getElementById(
+            'resultado'
+        );
+
+    texto.select();
+
+    navigator.clipboard
+        .writeText(texto.value);
+
+    alert('Texto copiado.');
+}
+
+
+function limparOrcamento() {
+    itens = [];
+
+    atualizarTabela();
+
+    document.getElementById(
+        'resultado'
+    ).value = '';
+}
+
+
+carregarCatalogo();
+
+</script>
+
+</body>
+</html>

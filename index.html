@@ -3,354 +3,360 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LavSofá - Gerador de Orçamentos</title>
+    <title>Sistema WSS</title>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
-
-<div class="container py-4">
-
+  <div class="container py-4">
     <div class="card shadow">
-        <div class="card-header">
-            <h3 class="mb-0">🛋️ LavSofá - Gerador de Orçamentos</h3>
-        </div>
+      <div class="card-header">
+        <h3 class="mb-0">🛋️ Sistema WSS</h3>
+      </div>
 
-        <div class="card-body">
-
+      <div class="card-body">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Orçamento</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Agendamento</button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
             <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label">Serviço:</label>
+                <select id="item" class="form-select"></select>
+              </div>
 
-                <div class="col-md-8">
-                    <label class="form-label">
-                        Serviço
-                    </label>
-
-                    <select
-                        id="item"
-                        class="form-select"
-                    ></select>
-                </div>
-
-                <div class="col-md-4 d-grid">
-                    <label class="form-label">&nbsp;</label>
-
-                    <button
-                        class="btn btn-primary"
-                        onclick="adicionarItem()"
-                    >
-                        Adicionar Item
-                    </button>
-                </div>
-
+              <div class="col-md-4 d-grid">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary" onclick="adicionarItem()">Adicionar Item</button>
+              </div>
             </div>
+            <hr/>
 
-            <hr>
-
-            <h5>Itens adicionados</h5>
-
+            <h5>Itens adicionados:</h5>
             <div class="table-responsive">
-                <table class="table table-striped align-middle">
-                    <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th width="180">Valor</th>
-                        <th width="200">Ações</th>
-                    </tr>
-                    </thead>
-
-                    <tbody id="tabelaItens">
-                    </tbody>
-                </table>
+              <table class="table table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th width="180">Valor</th>
+                    <th width="200">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelaItens"></tbody>
+              </table>
             </div>
-
-            <h4 class="mt-3">
-                Total:
-                <span id="total">
-                    R$ 0,00
-                </span>
-            </h4>
-
-            <hr>
+      
+            <h4 class="mt-3">Total: <span id="total">R$ 0,00</span></h4>
+            <hr/>
 
             <div class="d-grid gap-2">
-                <button
-                    class="btn btn-success"
-                    onclick="gerarMensagem()"
-                >
-                    Gerar Orçamento
-                </button>
-
-                <button
-                    class="btn btn-secondary"
-                    onclick="copiarTexto()"
-                >
-                    Copiar Texto
-                </button>
-
-                <button
-                    class="btn btn-danger"
-                    onclick="limparOrcamento()"
-                >
-                    Limpar
-                </button>
+              <button class="btn btn-success" onclick="gerarMensagem()">Gerar Orçamento</button>
+              <button class="btn btn-secondary" onclick="copiarTexto('resultado')">Copiar Texto</button>
+              <button class="btn btn-danger" onclick="limparTexto('resultado')">Limpar</button>
             </div>
-
+            
             <div class="mt-4">
-                <label class="form-label">
-                    Mensagem
-                </label>
-
-                <textarea
-                    id="resultado"
-                    class="form-control"
-                    rows="15"
-                ></textarea>
+              <label class="form-label">Texto:</label>
+              <textarea id="resultado" class="form-control" rows="15"></textarea>
             </div>
+          </div>
+      
+          <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+            <div class="d-grid gap-2 mt-4">
+              <button class="btn btn-primary" onclick="gerarSolicitacaoDados()">Solicitar Dados ao Cliente</button>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Nome:</label>
+                  <input id="agNome" class="form-control">
+                </div>
 
+                <div class="col-md-3">
+                  <label class="form-label">CPF:</label>
+                  <input id="agCPF" class="form-control" maxlength="14" oninput="formatarCPF(event)">
+
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Telefone:</label>
+                  <input id="agTelefone" class="form-control" maxlength="15" oninput="formatarTelefone(event)">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Endereço:</label>
+                  <input id="agEndereco" class="form-control">
+
+                  <button class="btn btn-info" onclick="abrirMaps()" style="margin-top: 10px;">Ver no Maps</button>
+                </div>
+
+                <div class="col-md-1">
+                  <label class="form-label">Número:</label>
+                  <input id="agNumero" class="form-control">
+                </div>
+
+                <div class="col-md-2">
+                  <label class="form-label">Complemento:</label>
+                  <input id="agComplemento" class="form-control">
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label">CEP:</label>
+                  <input id="agCEP" class="form-control" maxlength="9" oninput="formatarCEP(event)" onblur="buscarCEP()">
+                </div>
+
+                <div class="col-md-2">
+                  <label class="form-label">Data:</label>
+                  <input id="agData" type="date" class="form-control">
+                </div>
+
+                <div class="col-md-2">
+                  <label class="form-label">Horário:</label>
+                  <select id="agHora" class="form-select">
+                    <option value="">Selecione...</option>
+                    <option value="08:00">08:00</option>
+                    <option value="08:30">08:30</option>
+                    <option value="09:00">09:00</option>
+                    <option value="09:30">09:30</option>
+                    <option value="10:00">10:00</option>
+                    <option value="10:30">10:30</option>
+                    <option value="11:00">11:00</option>
+                    <option value="11:30">11:30</option>
+                    <option value="12:00">12:00</option>
+                    <option value="12:30">12:30</option>
+                    <option value="13:00">13:00</option>
+                    <option value="13:30">13:30</option>
+                    <option value="14:00">14:00</option>
+                    <option value="14:30">14:30</option>
+                    <option value="15:00">15:00</option>
+                    <option value="15:30">15:30</option>
+                    <option value="16:00">16:00</option>
+                    <option value="16:30">16:30</option>
+                    <option value="17:00">17:00</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn btn-success" onclick="gerarConfirmacaoAgendamento()">Confirmar Agendamento</button>
+              <button class="btn btn-secondary" onclick="copiarTexto('mensagem-agendamento')">Copiar Texto</button>
+              <button class="btn btn-danger" onclick="limparTexto('mensagem-agendamento')">Limpar</button>
+
+              <div class="mt-4">
+                <label class="form-label">Texto:</label>
+                <textarea id="mensagem-agendamento" class="form-control" rows="15"></textarea>      
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-
-</div>
+  </div>
+</body>
 
 <script>
 
-const catalogo = {
-    "Sofá 2L Retrátil": 229.90,
-    "Sofá 2L Fixo": 209.90,
-    "Sofá 3L Retrátil": 269.90,
-    "Sofá 3L Fixo": 249.90,
-    "Sofá 4L Retrátil": 329.90,
-    "Poltrona": 89.90,
-    "Puff": 49.90,
-    "Cadeira": 29.90,
-    "Colchão Solteiro": 149.90,
+  // Inicialização da página
+  window.onload = carregarCatalogo;
+
+  // Variáveis globais
+
+  const catalogo = {
+    "Berço Portátil": 149.90,
+    "Cabeceira": 89.90,
+    "Cadeira": 39.90,
+    "Carrinho de bebê": 129.90,
     "Colchão Casal": 189.90,
-    "Colchão Queen": 209.90,
     "Colchão King": 229.90,
-    "Cabeceira": 99.90
-};
+    "Colchão Queen": 209.90,
+    "Colchão Solteiro": 149.90,
+    "Poltrona": 89.90,
+    "Puff": 59.90,
+    "Sofá 2L Fixo": 209.90,
+    "Sofá 2L Retrátil": 229.90,
+    "Sofá 3L Fixo": 269.90,
+    "Sofá 3L Retrátil": 289.90,
+    "Sofá 4L Retrátil": 329.90,
+  };
 
-let itens = [];
+  let itens = [];
 
+  let ultimoOrcamento = {
+    total: 0,
+    valor3: '',
+    valor4: '',
+    valor5: '',
+    itens: ''
+  };
 
-function moeda(valor) {
-    return valor.toLocaleString(
-        'pt-BR',
-        {
-            style: 'currency',
-            currency: 'BRL'
-        }
-    );
-}
+  let bairro = '';
+  let cidade = '';
+  let uf = '';
 
+  // Funções auxiliares
 
-function carregarCatalogo() {
+  function moeda(valor) {
+    return valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+  }
+
+  function carregarCatalogo() {
     const select = document.getElementById('item');
 
-    Object.keys(catalogo)
-        .sort()
-        .forEach(item => {
+    select.innerHTML = `<option value="" selected disabled>Selecione um serviço...</option>`;
 
-            const option =
-                document.createElement('option');
+    Object.keys(catalogo).sort().forEach(item => {
+      const option = document.createElement('option');
 
-            option.value = item;
-            option.textContent = item;
+      option.value = item;
+      option.textContent = item;
 
-            select.appendChild(option);
-        });
-}
-
-
-function adicionarItem() {
-    const nome =
-        document.getElementById('item').value;
-
-    itens.push({
-        nome,
-        valor: catalogo[nome]
+      select.appendChild(option);
     });
+  }
 
-    atualizarTabela();
-}
+  function adicionarItem() {
+    const nome = document.getElementById('item').value;
 
-
-function removerItem(indice) {
-    itens.splice(indice, 1);
-    atualizarTabela();
-}
-
-
-function editarValor(indice) {
-    const novoValor =
-        prompt(
-            'Novo valor:',
-            itens[indice].valor.toFixed(2)
-        );
-
-    if (novoValor === null) {
-        return;
+    if (!nome) {
+      alert('Selecione um serviço.');
+      return;
     }
 
-    const valor =
-        parseFloat(
-            novoValor.replace(',', '.')
-        );
+    itens.push({
+      nome,
+      valor: catalogo[nome]
+    });
+    atualizarTabela();
+  }
+
+  function removerItem(indice) {
+    itens.splice(indice, 1);
+    atualizarTabela();
+  }
+
+  function editarValor(indice) {
+    const novoValor = prompt('Novo valor:', itens[indice].valor.toFixed(2));
+
+    if (novoValor === null) {
+      return;
+    }
+
+    const valor = parseFloat(novoValor.replace(',', '.'));
 
     if (isNaN(valor)) {
-        alert('Valor inválido.');
-        return;
+      alert('Valor inválido.');
+      return;
     }
 
     itens[indice].valor = valor;
-
     atualizarTabela();
-}
+  }
 
+  function formatarCPF(event) {
+    let valor = event.target.value.replace(/\D/g, '');
 
-function atualizarTabela() {
-    const tbody =
-        document.getElementById(
-            'tabelaItens'
-        );
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 
+    event.target.value = valor;
+  }
+
+  function formatarTelefone(event) {
+    let valor = event.target.value.replace(/\D/g, '');
+
+    if (valor.length <= 10) {
+      valor = valor.replace(/(\d{2})(\d)/, '($1) $2');
+      valor = valor.replace(/(\d{4})(\d)/, '$1-$2');
+    }
+    else {
+      valor = valor.replace(/(\d{2})(\d)/, '($1) $2');
+      valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
+    }
+
+    event.target.value = valor;
+  }
+
+  function atualizarTabela() {
+    const tbody = document.getElementById('tabelaItens');
     tbody.innerHTML = '';
-
     let total = 0;
 
     itens.forEach((item, indice) => {
-
-        total += item.valor;
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${item.nome}</td>
-
-                <td>
-                    ${moeda(item.valor)}
-                </td>
-
-                <td>
-                    <button
-                        class="btn btn-sm btn-warning"
-                        onclick="editarValor(${indice})"
-                    >
-                        Editar
-                    </button>
-
-                    <button
-                        class="btn btn-sm btn-danger"
-                        onclick="removerItem(${indice})"
-                    >
-                        Remover
-                    </button>
-                </td>
-            </tr>
-        `;
+      total += item.valor;
+      tbody.innerHTML += `
+        <tr>
+          <td>${item.nome}</td>
+          <td>${moeda(item.valor)}</td>
+          <td>
+            <button class="btn btn-sm btn-warning" onclick="editarValor(${indice})">Editar</button>
+            <button class="btn btn-sm btn-danger" onclick="removerItem(${indice})">Remover</button>
+          </td>
+        </tr>
+      `;
     });
+    document.getElementById('total').innerText = moeda(total);
+  }
 
-    document.getElementById(
-        'total'
-    ).innerText = moeda(total);
-}
-
-
-function calcularValor(
-    valor,
-    parcelas
-) {
-
+  function calcularValor(valor, parcelas) {
     const taxaVenda = 2.99;
-
     const taxas = {
-        3: 8.29,
-        4: 9.65,
-        5: 10.98
+      3: 8.29,
+      4: 9.65,
+      5: 10.98
     };
+    const taxa = taxaVenda + taxas[parcelas];
+    return valor / (1 - taxa / 100);
+  }
 
-    const taxa =
-        taxaVenda +
-        taxas[parcelas];
-
-    return valor /
-        (1 - taxa / 100);
-}
-
-
-function gerarMensagem() {
-
+  function gerarMensagem() {
     if (itens.length === 0) {
-        alert(
-            'Adicione pelo menos um item.'
-        );
-        return;
+      alert('Adicione pelo menos um item.');
+      return;
     }
 
-    const total =
-        itens.reduce(
-            (soma, item) =>
-                soma + item.valor,
-            0
-        );
-
+    const total = itens.reduce((soma, item) => soma + item.valor, 0);
     const agrupados = {};
 
     itens.forEach(item => {
+      const chave = `${item.nome}-${item.valor}`;
 
-        const chave =
-            `${item.nome}-${item.valor}`;
-
-        if (!agrupados[chave]) {
-            agrupados[chave] = {
-                nome: item.nome,
-                quantidade: 0
-            };
-        }
-
-        agrupados[chave]
-            .quantidade++;
+      if (!agrupados[chave]) {
+        agrupados[chave] = {
+          nome: item.nome,
+          quantidade: 0
+        };
+      }
+      agrupados[chave].quantidade++;
     });
 
-    const itensTexto =
-        Object.values(agrupados)
-            .map(item => {
+    const itensTexto = Object.values(agrupados).map(item => {
+      if (item.quantidade > 1) {
+        return `• ${item.nome} (${item.quantidade}x)`;
+      }
 
-                if (item.quantidade > 1) {
-                    return `• ${item.nome} (${item.quantidade}x)`;
-                }
+      return `• ${item.nome}`;
+    }).join('\n');
 
-                return `• ${item.nome}`;
-            })
-            .join('\n');
+    const valor3 = (calcularValor(total, 3) / 3).toFixed(2);
+    const valor4 = (calcularValor(total, 4) / 4).toFixed(2);
+    const valor5 = (calcularValor(total, 5) / 5).toFixed(2);
 
-    const valor3 =
-        (
-            calcularValor(
-                total,
-                3
-            ) / 3
-        ).toFixed(2);
+    ultimoOrcamento = {
+      total: total,
+      valor3: valor3,
+      valor4: valor4,
+      valor5: valor5,
+      itens: itensTexto
+    };
 
-    const valor4 =
-        (
-            calcularValor(
-                total,
-                4
-            ) / 4
-        ).toFixed(2);
-
-    const valor5 =
-        (
-            calcularValor(
-                total,
-                5
-            ) / 5
-        ).toFixed(2);
-
-    const texto = `🛋️ *ORÇAMENTO*
+    const data = new Date().toLocaleDateString('pt-BR');
+    const texto = 
+`🛋️ *ORÇAMENTO ${(data)}*
 
 O nosso serviço é profissional, seguro e especializado.
 
@@ -365,51 +371,146 @@ Nosso objetivo é simples: entregar *qualidade*, *segurança* e um *resultado* q
 ${itensTexto}
 
 💳 *Parcelamento no cartão de crédito*
-
 3x de R$ ${valor3}
 4x de R$ ${valor4}
 5x de R$ ${valor5}
 
 💰 *Oferta à vista*
+R$ ${total.toFixed(2)} no PIX ou dinheiro`;
+  document.getElementById('resultado').value = texto;
+  }
 
-R$ ${total.toFixed(2)} no PIX ou dinheiro
-`;
-
-    document.getElementById(
-        'resultado'
-    ).value = texto;
-}
-
-
-function copiarTexto() {
-    const texto =
-        document.getElementById(
-            'resultado'
-        );
-
+  function copiarTexto(element_id) {
+    const texto = document.getElementById(element_id);
     texto.select();
+    navigator.clipboard.writeText(texto.value);
+  }
 
-    navigator.clipboard
-        .writeText(texto.value);
-
-    alert('Texto copiado.');
-}
-
-
-function limparOrcamento() {
+  function limparTexto(element_id) {
     itens = [];
-
     atualizarTabela();
+    document.getElementById(element_id).value = '';
+  }
 
-    document.getElementById(
-        'resultado'
-    ).value = '';
+  function gerarSolicitacaoDados() {
+    const texto =
+`Para prosseguirmos com o agendamento, por favor, nos envie as seguintes informações:
+
+Nome completo:
+CPF:
+Endereço completo:
+CEP:
+
+Após o envio dos dados, retornaremos com a confirmação do agendamento. 😊`;
+
+  document.getElementById('mensagem-agendamento').value = texto;
+  }
+
+  function gerarConfirmacaoAgendamento() {
+    const nome = document.getElementById('agNome').value;
+    const cpf = document.getElementById('agCPF').value;
+    const telefone = document.getElementById('agTelefone').value;
+    const cep = document.getElementById('agCEP').value;
+    const data = document.getElementById('agData').value;
+    const hora = document.getElementById('agHora').value;
+
+    const logradouro = document.getElementById('agEndereco').value;
+    const numero = document.getElementById('agNumero').value;
+    const complemento = document.getElementById('agComplemento').value;
+    const endereco = `${logradouro}, ${numero}, ${complemento}, ${bairro} - ${cidade}/${uf} (CEP: ${cep})`;
+    const link_maps = `${logradouro}, ${numero}, ${bairro} - ${cidade}/${uf} (CEP: ${cep})`;
+
+    if (!nome || !cpf || !telefone || !endereco || !cep || !data || !hora || !ultimoOrcamento.itens) {
+      alert('Atenção! Gere o orçamento antes e preencha todos os dados do cliente.');
+      return;
+    }
+
+    const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+
+    const linkMaps =`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(link_maps)}`;
+
+  const texto =
+`Seu agendamento foi confirmado!
+
+Data: ${dataFormatada} ${hora}
+
+*Itens:*
+${ultimoOrcamento.itens}
+
+Nome: ${nome}
+CPF: ${cpf}
+Telefone: ${telefone}
+
+📍 Endereço: ${endereco}
+🗺️ ${linkMaps}
+
+*Informações de Pagamento:*
+
+*💳 Parcelamento no cartão de crédito*
+3x de R$ ${ultimoOrcamento.valor3}
+4x de R$ ${ultimoOrcamento.valor4}
+5x de R$ ${ultimoOrcamento.valor5}
+
+*💰 À vista:*
+R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
+
+  document.getElementById('mensagem-agendamento').value = texto;
+  }
+
+  function formatarCEP(event) {
+    let valor = event.target.value.replace(/\D/g, '');
+    valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
+    event.target.value = valor;
+  }
+
+  async function buscarCEP() {
+    const cep = document.getElementById('agCEP').value.replace(/\D/g, '');
+
+    if (cep.length !== 8) {
+      return;
+    }
+
+    const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const dados = await resposta.json();
+
+    if (dados.erro) {
+      alert('CEP não encontrado.');
+      return;
+    }
+
+    document.getElementById('agEndereco').value = dados.logradouro;
+
+    bairro = dados.bairro;
+    cidade = dados.localidade;
+    uf = dados.uf;
+  }
+
+  const autocomplete = new google.maps.places.Autocomplete(
+    document.getElementById('agEndereco'),
+    { 
+      componentRestrictions: { country: 'br' },
+      fields: [
+        'formatted_address',
+        'geometry',
+        'address_components'
+      ]
+    }
+  );
+
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+
+    console.log(place.formatted_address);
+    console.log(place.geometry.location.lat());
+    console.log(place.geometry.location.lng());
+  });
+
+  function abrirMaps() {
+    const endereco = document.getElementById('agEndereco').value;
+    const numero = document.getElementById('agNumero').value;
+
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)} ${encodeURIComponent(numero)}`, '_blank');
 }
-
-
-carregarCatalogo();
 
 </script>
-
-</body>
 </html>

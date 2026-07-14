@@ -7,6 +7,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-light">
   <div class="container py-4">
@@ -22,6 +23,12 @@
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Agendamento</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-estoque-tab" data-bs-toggle="pill" data-bs-target="#pills-estoque" type="button" role="tab" aria-controls="pills-estoque" aria-selected="false">Estoque</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-catalogo-tab" data-bs-toggle="pill" data-bs-target="#pills-catalogo" type="button" role="tab" aria-controls="pills-catalogo" aria-selected="false">Catálogo</button>
           </li>
         </ul>
         
@@ -152,6 +159,116 @@
               </div>
             </div>
           </div>
+
+          <div class="tab-pane fade" id="pills-estoque" role="tabpanel" aria-labelledby="pills-estoque-tab" tabindex="0">
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="row g-3">
+
+                  <div class="col-md-5">
+                    <label class="form-label">Produto</label>
+                    <select class="form-select" id="movProduto">
+                      <option value="" selected disabled>Selecione um produto...</option>
+                      <option value="All Clean">All Clean</option>
+                      <option value="Work Hard">Work Hard</option>
+                      <option value="PH">PH</option>
+                      <option value="Finisher">Finisher</option>
+                      <option value="Remove">Remove</option>
+                      <option value="Stain">Stain</option>
+                      <option value="Lisoform">Lisoform</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label class="form-label">Quantidade</label>
+                    <input type="number" id="movQuantidade" class="form-control" min="1" step="1">
+                  </div>
+
+                  <div class="col-md-4 d-flex align-items-end gap-2">
+                    <button class="btn btn-danger w-100" onclick="saidaEstoque()">
+                      <i class="bi bi-dash-lg"></i>
+                      Remover
+                    </button>
+                    <button class="btn btn-success w-100" onclick="entradaEstoque()">
+                      <i class="bi bi-plus-lg"></i>
+                      Adicionar
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Produto</th>
+                  <th>Estoque Atual</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyEstoque"></tbody>
+            </table>
+          </div>
+
+          <div class="tab-pane fade" id="pills-catalogo" role="tabpanel" aria-labelledby="pills-catalogo-tab" tabindex="0">
+              <div class="card mb-3">
+                <div class="card-body">
+
+                  <div class="row g-3">
+
+                    <div class="col-md-8">
+                      <label class="form-label">
+                        Item
+                      </label>
+
+                      <input
+                        type="text"
+                        id="novoServico"
+                        class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">
+                        Valor
+                      </label>
+
+                      <input
+                        type="number"
+                        id="novoValor"
+                        class="form-control"
+                        step="0.01">
+                    </div>
+
+                    <div class="col-md-12 d-grid">
+                      <button
+                        class="btn btn-success"
+                        onclick="adicionarServico()">
+                        Adicionar Item
+                      </button>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Valor</th>
+                    <th width="250">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody id="tbodyCatalogo"></tbody>
+              </table>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -160,28 +277,18 @@
 
 <script>
 
+  const SUPABASE_URL = 'https://uafzfedbopforaqookrd.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_5szoir4Z1GhW3YF8Qartxg_vj7_yD8n';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   // Inicialização da página
-  window.onload = carregarCatalogo;
+  window.onload = async function () {
+    await carregarCatalogo();
+    await carregarEstoque();
+    atualizarTabela();
+  };
 
   // Variáveis globais
-
-  const catalogo = {
-    "Berço Portátil": 149.90,
-    "Cabeceira": 89.90,
-    "Cadeira": 39.90,
-    "Carrinho de bebê": 129.90,
-    "Colchão Casal": 189.90,
-    "Colchão King": 229.90,
-    "Colchão Queen": 209.90,
-    "Colchão Solteiro": 149.90,
-    "Poltrona": 89.90,
-    "Puff": 59.90,
-    "Sofá 2L Fixo": 209.90,
-    "Sofá 2L Retrátil": 229.90,
-    "Sofá 3L Fixo": 269.90,
-    "Sofá 3L Retrátil": 289.90,
-    "Sofá 4L Retrátil": 329.90,
-  };
 
   let itens = [];
 
@@ -197,32 +304,74 @@
   let cidade = '';
   let uf = '';
 
+  let catalogo = {};
+  let estoque = {};
+
   // Funções auxiliares
 
   function moeda(valor) {
     return valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
   }
 
-  function carregarCatalogo() {
+  async function carregarCatalogo() {
+    const { data, error } = await supabaseClient
+      .from('catalogo')
+      .select('*')
+      .order('nome');
+
+    if (error) {
+      console.error(error);
+      alert('Erro ao carregar catálogo.');
+      return;
+    }
+
+    catalogo = {};
+
     const select = document.getElementById('item');
+    select.innerHTML =
+      '<option value="" selected disabled>Selecione um item...</option>';
 
-    select.innerHTML = `<option value="" selected disabled>Selecione um serviço...</option>`;
+    data.forEach(item => {
+      catalogo[item.nome] = Number(item.valor);
 
-    Object.keys(catalogo).sort().forEach(item => {
       const option = document.createElement('option');
-
-      option.value = item;
-      option.textContent = item;
-
+      option.value = item.nome;
+      option.textContent = item.nome;
       select.appendChild(option);
     });
+
+    atualizarTabelaCatalogo();
+  }
+
+  async function carregarEstoque() {
+    const { data, error } = await supabaseClient
+      .from('estoque')
+      .select('*')
+      .order('produto');
+
+    if (error) {
+      console.error(error);
+      alert('Erro ao carregar estoque.');
+      return;
+    }
+
+    estoque = {};
+
+    data.forEach(item => {
+      estoque[item.produto] = {
+        quantidade: Number(item.quantidade),
+        unidade: item.unidade
+      };
+    });
+
+    atualizarTabelaEstoque();
   }
 
   function adicionarItem() {
     const nome = document.getElementById('item').value;
 
     if (!nome) {
-      alert('Selecione um serviço.');
+      alert('Selecione um item.');
       return;
     }
 
@@ -387,9 +536,12 @@ R$ ${total.toFixed(2)} no PIX ou dinheiro`;
   }
 
   function limparTexto(element_id) {
-    itens = [];
-    atualizarTabela();
     document.getElementById(element_id).value = '';
+
+    if (element_id === 'resultado') {
+      itens = [];
+      atualizarTabela();
+    }
   }
 
   function gerarSolicitacaoDados() {
@@ -485,32 +637,268 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     uf = dados.uf;
   }
 
-  const autocomplete = new google.maps.places.Autocomplete(
-    document.getElementById('agEndereco'),
-    { 
-      componentRestrictions: { country: 'br' },
-      fields: [
-        'formatted_address',
-        'geometry',
-        'address_components'
-      ]
-    }
-  );
-
-  autocomplete.addListener('place_changed', () => {
-    const place = autocomplete.getPlace();
-
-    console.log(place.formatted_address);
-    console.log(place.geometry.location.lat());
-    console.log(place.geometry.location.lng());
-  });
-
   function abrirMaps() {
     const endereco = document.getElementById('agEndereco').value;
     const numero = document.getElementById('agNumero').value;
 
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)} ${encodeURIComponent(numero)}`, '_blank');
-}
+  }
+
+  async function salvarProduto(produto, quantidade) {
+    const { error } = await supabaseClient
+      .from('estoque')
+      .update({
+        quantidade: quantidade
+      })
+      .eq('produto', produto);
+
+    if (error) {
+      console.error(error);
+      alert('Erro ao salvar estoque.');
+    }
+  }
+
+  function atualizarPlaceholderQuantidade() {
+    const produto = document.getElementById('movProduto').value;
+    const unidade = estoque[produto]?.unidade || '';
+
+    document.getElementById('movQuantidade').placeholder = `Quantidade em ${unidade}`;
+  }
+
+  document.getElementById('movProduto').addEventListener('change', atualizarPlaceholderQuantidade);
+  
+  async function entradaEstoque() {
+    const produto =
+      document.getElementById('movProduto').value;
+
+    const quantidade = parseInt(document.getElementById('movQuantidade').value, 10);
+
+    if (!quantidade || quantidade <= 0) {
+      alert('Informe uma quantidade válida.');
+      return;
+    }
+
+    const estoqueAtual = estoque[produto].quantidade || 0;
+
+    const novaQuantidade = estoqueAtual + quantidade;
+    estoque[produto].quantidade = novaQuantidade;
+
+    await salvarProduto(
+      produto,
+      novaQuantidade
+    );
+
+    await carregarEstoque();
+
+    document.getElementById(
+      'movQuantidade'
+    ).value = '';
+  }
+
+  async function saidaEstoque() {
+    const produto = document.getElementById('movProduto').value;
+    const quantidade = parseInt(document.getElementById('movQuantidade').value, 10);
+
+    if (!quantidade || quantidade <= 0) {
+      alert('Informe uma quantidade válida.');
+      return;
+    }
+
+    const estoqueAtual = estoque[produto].quantidade || 0;
+
+    if (estoqueAtual < quantidade) {
+      alert('Estoque insuficiente.');
+      return;
+    }
+
+    const novaQuantidade = estoqueAtual - quantidade;
+
+    estoque[produto].quantidade = novaQuantidade;
+
+    await salvarProduto(produto, novaQuantidade);
+
+    await carregarEstoque();
+
+    document.getElementById('movQuantidade').value = '';
+  }
+
+  function atualizarTabelaEstoque() {
+    const tbody =
+      document.getElementById(
+        'tbodyEstoque'
+      );
+
+    tbody.innerHTML = '';
+
+    Object.keys(estoque).forEach(
+      produto => {
+        const item = estoque[produto];
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${produto}</td>
+            <td>
+              ${formatarQuantidade(item.quantidade, item.unidade)}
+            </td>
+          </tr>
+        `;
+      }
+    );
+  }
+
+  function formatarQuantidade(quantidade, unidade) {
+    if (unidade === 'ml' && quantidade >= 1000) {
+      const litros = quantidade / 1000;
+      return `${litros.toLocaleString('pt-BR')} L`;
+    }
+
+    if ((unidade === 'g' || unidade === 'gramas') && quantidade >= 1000) {
+      const kg = quantidade / 1000;
+      return `${kg.toLocaleString('pt-BR')} kg`;
+    }
+
+    return `${quantidade} ${unidade}`;
+  }
+
+  function atualizarTabelaCatalogo() {
+    const tbody =
+      document.getElementById(
+        'tbodyCatalogo'
+      );
+
+    tbody.innerHTML = '';
+
+    Object.keys(catalogo)
+      .sort()
+      .forEach(nome => {
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${nome}</td>
+            <td>${moeda(catalogo[nome])}</td>
+            <td>
+
+              <button
+                class="btn btn-warning btn-sm"
+                onclick="editarServico('${nome}')">
+                Editar
+              </button>
+
+              <button
+                class="btn btn-danger btn-sm"
+                onclick="removerServico('${nome}')">
+                Excluir
+              </button>
+
+            </td>
+          </tr>
+        `;
+      });
+  }
+
+  async function adicionarServico() {
+    const nome =
+      document.getElementById(
+        'novoServico'
+      ).value.trim();
+
+    const valor = parseFloat(
+      document.getElementById(
+        'novoValor'
+      ).value
+    );
+
+    if (!nome || isNaN(valor)) {
+      alert('Preencha todos os campos.');
+      return;
+    }
+
+    const { error } =
+      await supabaseClient
+        .from('catalogo')
+        .insert({
+          nome,
+          valor
+        });
+
+    if (error) {
+      console.error(error);
+      alert('Erro ao adicionar.');
+      return;
+    }
+
+    document.getElementById(
+      'novoServico'
+    ).value = '';
+
+    document.getElementById(
+      'novoValor'
+    ).value = '';
+
+    await carregarCatalogo();
+  }
+
+  async function editarServico(nome) {
+    const valorAtual =
+      catalogo[nome];
+
+    const novoValor = prompt(
+      'Novo valor:',
+      valorAtual
+    );
+
+    if (novoValor === null) {
+      return;
+    }
+
+    const valor =
+      parseFloat(
+        novoValor.replace(',', '.')
+      );
+
+    if (isNaN(valor)) {
+      alert('Valor inválido.');
+      return;
+    }
+
+    const { error } =
+      await supabaseClient
+        .from('catalogo')
+        .update({
+          valor
+        })
+        .eq('nome', nome);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    await carregarCatalogo();
+  }
+
+  async function removerServico(nome) {
+    if (
+      !confirm(
+        `Excluir "${nome}"?`
+      )
+    ) {
+      return;
+    }
+
+    const { error } =
+      await supabaseClient
+        .from('catalogo')
+        .delete()
+        .eq('nome', nome);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    await carregarCatalogo();
+  }
 
 </script>
 </html>

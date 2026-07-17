@@ -8,6 +8,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+      .card-agenda {
+        border-left: 5px solid #0d6efd;
+        transition: 0.2s;
+      }
+
+      .card-agenda:hover {
+        transform: translateY(-2px);
+      }
+
+      .itens-agenda {
+        white-space: pre-line;
+      }
+    </style>
 </head>
 <body class="bg-light">
   <div class="container py-4">
@@ -19,10 +34,13 @@
       <div class="card-body">
         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Orçamento</button>
+            <button class="nav-link active" id="pills-agenda-tab" data-bs-toggle="pill" data-bs-target="#pills-agenda" type="button" role="tab" aria-controls="pills-agenda" aria-selected="true">Agenda</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Agendamento</button>
+            <button class="nav-link" id="pills-orcamento-tab" data-bs-toggle="pill" data-bs-target="#pills-orcamento" type="button" role="tab" aria-controls="pills-orcamento" aria-selected="true">Orçamento</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-agendamento-tab" data-bs-toggle="pill" data-bs-target="#pills-agendamento" type="button" role="tab" aria-controls="pills-agendamento" aria-selected="false">Agendamento</button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="pills-estoque-tab" data-bs-toggle="pill" data-bs-target="#pills-estoque" type="button" role="tab" aria-controls="pills-estoque" aria-selected="false">Estoque</button>
@@ -33,16 +51,20 @@
         </ul>
         
         <div class="tab-content" id="pills-tabContent">
-          <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+          <div class="tab-pane fade show active" id="pills-agenda" role="tabpanel">
+            <div id="listaAgenda" class="row g-3"></div>
+          </div>
+
+          <div class="tab-pane fade" id="pills-orcamento" role="tabpanel" aria-labelledby="pills-orcamento-tab" tabindex="1">
             <div class="row g-3">
               <div class="col-md-8">
-                <label class="form-label">Serviço:</label>
+                <label class="form-label">Item:</label>
                 <select id="item" class="form-select"></select>
               </div>
 
               <div class="col-md-4 d-grid">
                 <label class="form-label">&nbsp;</label>
-                <button class="btn btn-primary" onclick="adicionarItem()">Adicionar Item</button>
+                <button class="btn btn-primary" onclick="adicionarItemOrcamento()">Adicionar Item</button>
               </div>
             </div>
             <hr/>
@@ -65,18 +87,17 @@
             <hr/>
 
             <div class="d-grid gap-2">
-              <button class="btn btn-success" onclick="gerarMensagem()">Gerar Orçamento</button>
+              <button class="btn btn-success" onclick="gerarMensagemOrcamento()">Gerar Orçamento</button>
               <button class="btn btn-secondary" onclick="copiarTexto('resultado')">Copiar Texto</button>
               <button class="btn btn-danger" onclick="limparTexto('resultado')">Limpar</button>
             </div>
             
             <div class="mt-4">
-              <label class="form-label">Texto:</label>
               <textarea id="resultado" class="form-control" rows="15"></textarea>
             </div>
           </div>
       
-          <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+          <div class="tab-pane fade" id="pills-agendamento" role="tabpanel" aria-labelledby="pills-agendamento-tab" tabindex="2">
             <div class="d-grid gap-2 mt-4">
               <button class="btn btn-primary" onclick="gerarSolicitacaoDados()">Solicitar Dados ao Cliente</button>
               <div class="row g-3">
@@ -95,6 +116,11 @@
                   <input id="agTelefone" class="form-control" maxlength="15" oninput="formatarTelefone(event)">
                 </div>
 
+                <div class="col-md-3">
+                  <label class="form-label">CEP:</label>
+                  <input id="agCEP" class="form-control" maxlength="9" oninput="formatarCEP(event)" onblur="buscarCEP()">
+                </div>
+
                 <div class="col-md-6">
                   <label class="form-label">Endereço:</label>
                   <input id="agEndereco" class="form-control">
@@ -110,11 +136,6 @@
                 <div class="col-md-2">
                   <label class="form-label">Complemento:</label>
                   <input id="agComplemento" class="form-control">
-                </div>
-
-                <div class="col-md-3">
-                  <label class="form-label">CEP:</label>
-                  <input id="agCEP" class="form-control" maxlength="9" oninput="formatarCEP(event)" onblur="buscarCEP()">
                 </div>
 
                 <div class="col-md-2">
@@ -154,28 +175,19 @@
               <button class="btn btn-danger" onclick="limparTexto('mensagem-agendamento')">Limpar</button>
 
               <div class="mt-4">
-                <label class="form-label">Texto:</label>
                 <textarea id="mensagem-agendamento" class="form-control" rows="15"></textarea>      
               </div>
             </div>
           </div>
 
-          <div class="tab-pane fade" id="pills-estoque" role="tabpanel" aria-labelledby="pills-estoque-tab" tabindex="0">
+          <div class="tab-pane fade" id="pills-estoque" role="tabpanel" aria-labelledby="pills-estoque-tab" tabindex="3">
             <div class="card mb-3">
               <div class="card-body">
                 <div class="row g-3">
 
                   <div class="col-md-5">
                     <label class="form-label">Produto</label>
-                    <select class="form-select" id="movProduto">
-                      <option value="" selected disabled>Selecione um produto...</option>
-                      <option value="All Clean">All Clean</option>
-                      <option value="Work Hard">Work Hard</option>
-                      <option value="PH">PH</option>
-                      <option value="Finisher">Finisher</option>
-                      <option value="Remove">Remove</option>
-                      <option value="Stain">Stain</option>
-                      <option value="Lisoform">Lisoform</option>
+                    <select class="form-select" id="movProduto" onchange="atualizarPlaceholderQuantidadeEstoque()">
                     </select>
                   </div>
 
@@ -210,7 +222,7 @@
             </table>
           </div>
 
-          <div class="tab-pane fade" id="pills-catalogo" role="tabpanel" aria-labelledby="pills-catalogo-tab" tabindex="0">
+          <div class="tab-pane fade" id="pills-catalogo" role="tabpanel" aria-labelledby="pills-catalogo-tab" tabindex="4">
               <div class="card mb-3">
                 <div class="card-body">
 
@@ -223,7 +235,7 @@
 
                       <input
                         type="text"
-                        id="novoServico"
+                        id="novoItem"
                         class="form-control">
                     </div>
 
@@ -242,7 +254,7 @@
                     <div class="col-md-12 d-grid">
                       <button
                         class="btn btn-success"
-                        onclick="adicionarServico()">
+                        onclick="adicionarItemCatalogo()">
                         Adicionar Item
                       </button>
                     </div>
@@ -285,12 +297,13 @@
   window.onload = async function () {
     await carregarCatalogo();
     await carregarEstoque();
-    atualizarTabela();
+    await carregarAgenda();
+    atualizarTabelaOrcamento();
   };
 
   // Variáveis globais
 
-  let itens = [];
+  let itensOrcamento = [];
 
   let ultimoOrcamento = {
     total: 0,
@@ -300,12 +313,14 @@
     itens: ''
   };
 
+  let logradouro = '';
   let bairro = '';
   let cidade = '';
   let uf = '';
 
   let catalogo = {};
   let estoque = {};
+  let agenda = [];
 
   // Funções auxiliares
 
@@ -314,10 +329,7 @@
   }
 
   async function carregarCatalogo() {
-    const { data, error } = await supabaseClient
-      .from('catalogo')
-      .select('*')
-      .order('nome');
+    const { data, error } = await supabaseClient.from('catalogo').select('*').order('nome');
 
     if (error) {
       console.error(error);
@@ -328,8 +340,7 @@
     catalogo = {};
 
     const select = document.getElementById('item');
-    select.innerHTML =
-      '<option value="" selected disabled>Selecione um item...</option>';
+    select.innerHTML = '<option value="" selected disabled>Selecione um item...</option>';
 
     data.forEach(item => {
       catalogo[item.nome] = Number(item.valor);
@@ -355,8 +366,6 @@
       return;
     }
 
-    estoque = {};
-
     data.forEach(item => {
       estoque[item.produto] = {
         quantidade: Number(item.quantidade),
@@ -365,9 +374,22 @@
     });
 
     atualizarTabelaEstoque();
+    atualizarSelectEstoque();
   }
 
-  function adicionarItem() {
+  async function carregarAgenda() {
+    const { data, error } = await supabaseClient.from('agenda').select('*').order('data').order('horario');
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    agenda = data;
+    atualizarTabelaAgenda();
+  }
+
+  function adicionarItemOrcamento() {
     const nome = document.getElementById('item').value;
 
     if (!nome) {
@@ -375,20 +397,20 @@
       return;
     }
 
-    itens.push({
+    itensOrcamento.push({
       nome,
       valor: catalogo[nome]
     });
-    atualizarTabela();
+    atualizarTabelaOrcamento();
   }
 
-  function removerItem(indice) {
-    itens.splice(indice, 1);
-    atualizarTabela();
+  function removerItemOrcamento(indice) {
+    itensOrcamento.splice(indice, 1);
+    atualizarTabelaOrcamento();
   }
 
-  function editarValor(indice) {
-    const novoValor = prompt('Novo valor:', itens[indice].valor.toFixed(2));
+  function editarValorOrcamento(indice) {
+    const novoValor = prompt('Novo valor:', itensOrcamento[indice].valor.toFixed(2));
 
     if (novoValor === null) {
       return;
@@ -401,8 +423,8 @@
       return;
     }
 
-    itens[indice].valor = valor;
-    atualizarTabela();
+    itensOrcamento[indice].valor = valor;
+    atualizarTabelaOrcamento();
   }
 
   function formatarCPF(event) {
@@ -430,20 +452,20 @@
     event.target.value = valor;
   }
 
-  function atualizarTabela() {
+  function atualizarTabelaOrcamento() {
     const tbody = document.getElementById('tabelaItens');
     tbody.innerHTML = '';
     let total = 0;
 
-    itens.forEach((item, indice) => {
+    itensOrcamento.forEach((item, indice) => {
       total += item.valor;
       tbody.innerHTML += `
         <tr>
           <td>${item.nome}</td>
           <td>${moeda(item.valor)}</td>
           <td>
-            <button class="btn btn-sm btn-warning" onclick="editarValor(${indice})">Editar</button>
-            <button class="btn btn-sm btn-danger" onclick="removerItem(${indice})">Remover</button>
+            <button class="btn btn-sm btn-warning" onclick="editarValorOrcamento(${indice})">Editar</button>
+            <button class="btn btn-sm btn-danger" onclick="removerItemOrcamento(${indice})">Remover</button>
           </td>
         </tr>
       `;
@@ -454,6 +476,8 @@
   function calcularValor(valor, parcelas) {
     const taxaVenda = 2.99;
     const taxas = {
+      1: 4.98,
+      2: 6.91,
       3: 8.29,
       4: 9.65,
       5: 10.98
@@ -462,16 +486,16 @@
     return valor / (1 - taxa / 100);
   }
 
-  function gerarMensagem() {
-    if (itens.length === 0) {
-      alert('Adicione pelo menos um item.');
+  function gerarMensagemOrcamento() {
+    if (itensOrcamento.length === 0) {
+      alert('Adicione pelo menos um item no Orçamento!');
       return;
     }
 
-    const total = itens.reduce((soma, item) => soma + item.valor, 0);
+    const total = itensOrcamento.reduce((soma, item) => soma + item.valor, 0);
     const agrupados = {};
 
-    itens.forEach(item => {
+    itensOrcamento.forEach(item => {
       const chave = `${item.nome}-${item.valor}`;
 
       if (!agrupados[chave]) {
@@ -483,7 +507,7 @@
       agrupados[chave].quantidade++;
     });
 
-    const itensTexto = Object.values(agrupados).map(item => {
+    const itensSelecionados = Object.values(agrupados).map(item => {
       if (item.quantidade > 1) {
         return `• ${item.nome} (${item.quantidade}x)`;
       }
@@ -491,16 +515,20 @@
       return `• ${item.nome}`;
     }).join('\n');
 
+    const valor1 = (calcularValor(total, 1) / 1).toFixed(2);
+    const valor2 = (calcularValor(total, 2) / 2).toFixed(2);
     const valor3 = (calcularValor(total, 3) / 3).toFixed(2);
     const valor4 = (calcularValor(total, 4) / 4).toFixed(2);
     const valor5 = (calcularValor(total, 5) / 5).toFixed(2);
 
     ultimoOrcamento = {
       total: total,
+      valor1: valor1,
+      valor2: valor2,
       valor3: valor3,
       valor4: valor4,
       valor5: valor5,
-      itens: itensTexto
+      itens: itensSelecionados
     };
 
     const data = new Date().toLocaleDateString('pt-BR');
@@ -517,7 +545,7 @@ Nosso objetivo é simples: entregar *qualidade*, *segurança* e um *resultado* q
 
 *Itens solicitados:*
 
-${itensTexto}
+${itensSelecionados}
 
 💳 *Parcelamento no cartão de crédito*
 3x de R$ ${valor3}
@@ -539,8 +567,8 @@ R$ ${total.toFixed(2)} no PIX ou dinheiro`;
     document.getElementById(element_id).value = '';
 
     if (element_id === 'resultado') {
-      itens = [];
-      atualizarTabela();
+      itensOrcamento = [];
+      atualizarTabelaOrcamento();
     }
   }
 
@@ -566,10 +594,10 @@ Após o envio dos dados, retornaremos com a confirmação do agendamento. 😊`;
     const data = document.getElementById('agData').value;
     const hora = document.getElementById('agHora').value;
 
-    const logradouro = document.getElementById('agEndereco').value;
     const numero = document.getElementById('agNumero').value;
     const complemento = document.getElementById('agComplemento').value;
     const endereco = `${logradouro}, ${numero}, ${complemento}, ${bairro} - ${cidade}/${uf} (CEP: ${cep})`;
+    
     const link_maps = `${logradouro}, ${numero}, ${bairro} - ${cidade}/${uf} (CEP: ${cep})`;
 
     if (!nome || !cpf || !telefone || !endereco || !cep || !data || !hora || !ultimoOrcamento.itens) {
@@ -599,6 +627,8 @@ Telefone: ${telefone}
 *Informações de Pagamento:*
 
 *💳 Parcelamento no cartão de crédito*
+1x de R$ ${ultimoOrcamento.valor1}
+2x de R$ ${ultimoOrcamento.valor2}
 3x de R$ ${ultimoOrcamento.valor3}
 4x de R$ ${ultimoOrcamento.valor4}
 5x de R$ ${ultimoOrcamento.valor5}
@@ -607,6 +637,8 @@ Telefone: ${telefone}
 R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
 
   document.getElementById('mensagem-agendamento').value = texto;
+
+  salvarAgendamento(nome, telefone, endereco, data, hora, ultimoOrcamento.itens, linkMaps);
   }
 
   function formatarCEP(event) {
@@ -630,27 +662,24 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
       return;
     }
 
-    document.getElementById('agEndereco').value = dados.logradouro;
-
+    logradouro = dados.logradouro;
     bairro = dados.bairro;
     cidade = dados.localidade;
     uf = dados.uf;
+
+    document.getElementById('agEndereco').value = `${logradouro}, ${bairro} - ${cidade} / ${uf}`;
   }
 
   function abrirMaps() {
-    const endereco = document.getElementById('agEndereco').value;
     const numero = document.getElementById('agNumero').value;
+    const cep = document.getElementById('agCEP').value;
+    const link_maps = `${logradouro}, ${numero}, ${bairro} - ${cidade}/${uf} (CEP: ${cep})`
 
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)} ${encodeURIComponent(numero)}`, '_blank');
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(link_maps)}`, '_blank');
   }
 
-  async function salvarProduto(produto, quantidade) {
-    const { error } = await supabaseClient
-      .from('estoque')
-      .update({
-        quantidade: quantidade
-      })
-      .eq('produto', produto);
+  async function updateProdutoEstoque(produto, quantidade) {
+    const { error } = await supabaseClient.from('estoque').update({quantidade: quantidade}).eq('produto', produto);
 
     if (error) {
       console.error(error);
@@ -658,18 +687,15 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     }
   }
 
-  function atualizarPlaceholderQuantidade() {
+  function atualizarPlaceholderQuantidadeEstoque() {
     const produto = document.getElementById('movProduto').value;
     const unidade = estoque[produto]?.unidade || '';
 
     document.getElementById('movQuantidade').placeholder = `Quantidade em ${unidade}`;
   }
-
-  document.getElementById('movProduto').addEventListener('change', atualizarPlaceholderQuantidade);
   
   async function entradaEstoque() {
-    const produto =
-      document.getElementById('movProduto').value;
+    const produto = document.getElementById('movProduto').value;
 
     const quantidade = parseInt(document.getElementById('movQuantidade').value, 10);
 
@@ -683,16 +709,11 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     const novaQuantidade = estoqueAtual + quantidade;
     estoque[produto].quantidade = novaQuantidade;
 
-    await salvarProduto(
-      produto,
-      novaQuantidade
-    );
+    await updateProdutoEstoque(produto, novaQuantidade);
 
     await carregarEstoque();
 
-    document.getElementById(
-      'movQuantidade'
-    ).value = '';
+    document.getElementById('movQuantidade').value = '';
   }
 
   async function saidaEstoque() {
@@ -715,7 +736,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
 
     estoque[produto].quantidade = novaQuantidade;
 
-    await salvarProduto(produto, novaQuantidade);
+    await updateProdutoEstoque(produto, novaQuantidade);
 
     await carregarEstoque();
 
@@ -723,25 +744,20 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
   }
 
   function atualizarTabelaEstoque() {
-    const tbody =
-      document.getElementById(
-        'tbodyEstoque'
-      );
-
+    const tbody = document.getElementById('tbodyEstoque' );
     tbody.innerHTML = '';
 
-    Object.keys(estoque).forEach(
-      produto => {
-        const item = estoque[produto];
+    Object.keys(estoque).forEach(produto => {
+      const item = estoque[produto];
 
-        tbody.innerHTML += `
-          <tr>
-            <td>${produto}</td>
-            <td>
-              ${formatarQuantidade(item.quantidade, item.unidade)}
-            </td>
-          </tr>
-        `;
+      tbody.innerHTML += `
+        <tr>
+          <td>${produto}</td>
+          <td>
+            ${formatarQuantidade(item.quantidade, item.unidade)}
+          </td>
+        </tr>
+      `;
       }
     );
   }
@@ -752,74 +768,63 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
       return `${litros.toLocaleString('pt-BR')} L`;
     }
 
-    if ((unidade === 'g' || unidade === 'gramas') && quantidade >= 1000) {
+    if (unidade === 'g' && quantidade >= 1000) {
       const kg = quantidade / 1000;
-      return `${kg.toLocaleString('pt-BR')} kg`;
+      return `${kg.toLocaleString('pt-BR')} KG`;
     }
 
     return `${quantidade} ${unidade}`;
   }
 
   function atualizarTabelaCatalogo() {
-    const tbody =
-      document.getElementById(
-        'tbodyCatalogo'
-      );
-
+    const tbody = document.getElementById('tbodyCatalogo');
     tbody.innerHTML = '';
 
-    Object.keys(catalogo)
-      .sort()
-      .forEach(nome => {
+    Object.keys(catalogo).sort().forEach(nome => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${nome}</td>
+          <td>${moeda(catalogo[nome])}</td>
+          <td>
 
-        tbody.innerHTML += `
-          <tr>
-            <td>${nome}</td>
-            <td>${moeda(catalogo[nome])}</td>
-            <td>
+            <button
+              class="btn btn-warning btn-sm"
+              onclick="editarItemCatalogo('${nome}')">
+              Editar
+            </button>
 
-              <button
-                class="btn btn-warning btn-sm"
-                onclick="editarServico('${nome}')">
-                Editar
-              </button>
+            <button
+              class="btn btn-danger btn-sm"
+              onclick="removerItemCatalogo('${nome}')">
+              Excluir
+            </button>
 
-              <button
-                class="btn btn-danger btn-sm"
-                onclick="removerServico('${nome}')">
-                Excluir
-              </button>
-
-            </td>
-          </tr>
-        `;
+          </td>
+        </tr>
+      `;
       });
   }
 
-  async function adicionarServico() {
-    const nome =
-      document.getElementById(
-        'novoServico'
-      ).value.trim();
+  function atualizarSelectEstoque() {
+    const select = document.getElementById('movProduto');
 
-    const valor = parseFloat(
-      document.getElementById(
-        'novoValor'
-      ).value
-    );
+    select.innerHTML = '<option value="" selected disabled>Selecione um produto...</option>';
+
+    Object.keys(estoque).forEach(produto => {
+      select.innerHTML += `<option value="${produto}">${produto}</option>`;
+    });
+  }
+
+  async function adicionarItemCatalogo() {
+    const nome = document.getElementById('novoItem').value.trim();
+    const valor = parseFloat(document.getElementById('novoValor').value);
 
     if (!nome || isNaN(valor)) {
       alert('Preencha todos os campos.');
       return;
     }
 
-    const { error } =
-      await supabaseClient
-        .from('catalogo')
-        .insert({
-          nome,
-          valor
-        });
+    const { error } = await supabaseClient.from('catalogo').insert({nome, valor});
 
     if (error) {
       console.error(error);
@@ -827,47 +832,28 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
       return;
     }
 
-    document.getElementById(
-      'novoServico'
-    ).value = '';
-
-    document.getElementById(
-      'novoValor'
-    ).value = '';
+    document.getElementById('novoItem').value = '';
+    document.getElementById('novoValor').value = '';
 
     await carregarCatalogo();
   }
 
-  async function editarServico(nome) {
-    const valorAtual =
-      catalogo[nome];
-
-    const novoValor = prompt(
-      'Novo valor:',
-      valorAtual
-    );
+  async function editarItemCatalogo(nome) {
+    const valorAtual = catalogo[nome];
+    const novoValor = prompt('Novo valor:',valorAtual);
 
     if (novoValor === null) {
       return;
     }
 
-    const valor =
-      parseFloat(
-        novoValor.replace(',', '.')
-      );
+    const valor = parseFloat(novoValor.replace(',', '.'));
 
     if (isNaN(valor)) {
       alert('Valor inválido.');
       return;
     }
 
-    const { error } =
-      await supabaseClient
-        .from('catalogo')
-        .update({
-          valor
-        })
-        .eq('nome', nome);
+    const { error } = await supabaseClient.from('catalogo').update({valor}).eq('nome', nome);
 
     if (error) {
       console.error(error);
@@ -877,20 +863,12 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     await carregarCatalogo();
   }
 
-  async function removerServico(nome) {
-    if (
-      !confirm(
-        `Excluir "${nome}"?`
-      )
-    ) {
+  async function removerItemCatalogo(nome) {
+    if (!confirm(`Excluir "${nome}"?`)) {
       return;
     }
 
-    const { error } =
-      await supabaseClient
-        .from('catalogo')
-        .delete()
-        .eq('nome', nome);
+    const { error } = await supabaseClient.from('catalogo').delete().eq('nome', nome);
 
     if (error) {
       console.error(error);
@@ -898,6 +876,96 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     }
 
     await carregarCatalogo();
+  }
+
+  function atualizarTabelaAgenda() {
+    const lista = document.getElementById('listaAgenda');
+    lista.innerHTML = '';
+
+    if (agenda.length === 0) {
+      lista.innerHTML = `
+        <div class="col-12">
+          <div class="alert alert-light border text-center">
+            Nenhum serviço agendado.
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    agenda.forEach(item => {
+      const data = new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR');
+
+      lista.innerHTML += `
+        <div class="col-md-6">
+          <div class="card shadow-sm card-agenda h-100">
+            <div class="card-body">
+              <h6 class="card-title">📅 ${data} às ${item.horario}</h6>
+              <p class="mb-1"><strong>${item.nome}</strong></p>
+              <p class="mb-1">${item.telefone}</p>
+              <p class="mb-3">${item.endereco}</p>
+
+
+              <div class="mb-3">
+                <strong>Itens:</strong>
+                <div class="itens-agenda">
+                  ${item.itens}
+                </div>
+              </div>
+
+              <p class="mb-3"><strong>Valor à vista:</strong> ${item.valor}</p>
+              <p class="mb-3"><strong>Parcelas:</strong> ${item.parcelas}</p>
+
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary btn-sm" onclick="window.open('${item.link_maps}', '_blank' )">Abrir Mapa</button>
+                <button class="btn btn-danger btn-sm" onclick="excluirAgendamento(${item.id})">Excluir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  async function salvarAgendamento(nome, telefone, endereco, data, hora, itens, linkMaps) {
+    const { error } = await supabaseClient.from('agenda').insert({nome, telefone, endereco, data, horario: hora, itens, link_maps: linkMaps});
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    await carregarAgenda();
+  }
+
+  async function excluirAgendamento(id) {
+    if (!confirm('Excluir agendamento?')) {
+      return;
+    }
+
+    const { error } = await supabaseClient.from('agenda').delete().eq('id', id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    await carregarAgenda();
+  }
+
+  async function excluirAgendamento(id) {
+    if (!confirm('Excluir agendamento?')) {
+      return;
+    }
+
+    const { error } = await supabaseClient.from('agenda').delete().eq('id', id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    await carregarAgenda();
   }
 
 </script>

@@ -378,7 +378,7 @@
   }
 
   async function carregarAgenda() {
-    const { data, error } = await supabaseClient.from('agenda').select('*').order('data').order('horario');
+    const { data, error } = await supabaseClient.from('agenda').select('*').eq('finalizado', false).order('data').order('horario');
 
     if (error) {
       console.error(error);
@@ -638,7 +638,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
 
   document.getElementById('mensagem-agendamento').value = texto;
 
-  salvarAgendamento(nome, telefone, endereco, data, hora, ultimoOrcamento.itens, linkMaps);
+  salvarAgendamento(nome, cpf, telefone, endereco, data, hora, ultimoOrcamento, linkMaps);
   }
 
   function formatarCEP(event) {
@@ -904,21 +904,32 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
               <p class="mb-1"><strong>${item.nome}</strong></p>
               <p class="mb-1">${item.telefone}</p>
               <p class="mb-3">${item.endereco}</p>
-
-
+              <button class="btn btn-primary btn-sm" onclick="window.open('${item.link_maps}', '_blank' )">Ver Mapa</button>
+              <hr/>
               <div class="mb-3">
                 <strong>Itens:</strong>
                 <div class="itens-agenda">
-                  ${item.itens}
+                  ${item.orcamento.itens}
                 </div>
               </div>
 
-              <p class="mb-3"><strong>Valor à vista:</strong> ${item.valor}</p>
-              <p class="mb-3"><strong>Parcelas:</strong> ${item.parcelas}</p>
+              <label><strong>Parcelamento no cartão de crédito:</strong></label>
+              <table>
+                <tr><td>1x de R$ ${item.orcamento.valor1}</td></tr>
+                <tr><td>2x de R$ ${item.orcamento.valor2}</td></tr>
+                <tr><td>3x de R$ ${item.orcamento.valor3}</td></tr>
+                <tr><td>4x de R$ ${item.orcamento.valor4}</td></tr>
+                <tr><td>5x de R$ ${item.orcamento.valor5}</td></tr>
+              </table>
+              </br>
+              <label><strong>Valor à vista:</strong></label>
+              <table>
+                <tr><td>R$ ${item.orcamento.total} no PIX ou Dinheiro</td></tr>
+              </table>
 
               <div class="d-flex gap-2">
-                <button class="btn btn-primary btn-sm" onclick="window.open('${item.link_maps}', '_blank' )">Abrir Mapa</button>
                 <button class="btn btn-danger btn-sm" onclick="excluirAgendamento(${item.id})">Excluir</button>
+                <button class="btn btn-success btn-sm" onclick="finalizarServico(${item.id})">Finalizar</button>
               </div>
             </div>
           </div>
@@ -927,8 +938,8 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     });
   }
 
-  async function salvarAgendamento(nome, telefone, endereco, data, hora, itens, linkMaps) {
-    const { error } = await supabaseClient.from('agenda').insert({nome, telefone, endereco, data, horario: hora, itens, link_maps: linkMaps});
+  async function salvarAgendamento(nome, cpf, telefone, endereco, data, hora, orcamento, linkMaps) {
+    const { error } = await supabaseClient.from('agenda').insert({nome, telefone, endereco, data, horario: hora, orcamento, link_maps: linkMaps});
 
     if (error) {
       console.error(error);
@@ -959,6 +970,21 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     }
 
     const { error } = await supabaseClient.from('agenda').delete().eq('id', id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    await carregarAgenda();
+  }
+
+  async function finalizarServico(id) {
+    if (!confirm('Serviço finalizado?')) {
+      return;
+    }
+
+    const { error } = await supabaseClient.from('agenda').update({finalizado: true}).eq('id', id);
 
     if (error) {
       console.error(error);

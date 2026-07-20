@@ -928,7 +928,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
               </table>
 
               <div class="d-flex gap-2">
-                <button class="btn btn-danger btn-sm" onclick="excluirAgendamento(${item.id})">Excluir</button>
+                <button class="btn btn-danger btn-sm" onclick="cancelarAgendamento(${item.id})">Cancelar</button>
                 <button class="btn btn-success btn-sm" onclick="finalizarServico(${item.id})">Finalizar</button>
               </div>
             </div>
@@ -949,22 +949,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     await carregarAgenda();
   }
 
-  async function excluirAgendamento(id) {
-    if (!confirm('Excluir agendamento?')) {
-      return;
-    }
-
-    const { error } = await supabaseClient.from('agenda').delete().eq('id', id);
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    await carregarAgenda();
-  }
-
-  async function excluirAgendamento(id) {
+  async function cancelarAgendamento(id) {
     if (!confirm('Excluir agendamento?')) {
       return;
     }

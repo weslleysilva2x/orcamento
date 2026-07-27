@@ -51,10 +51,12 @@
         </ul>
         
         <div class="tab-content" id="pills-tabContent">
+          <!-- Agenda -->
           <div class="tab-pane fade show active" id="pills-agenda" role="tabpanel">
             <div id="listaAgenda" class="row g-3"></div>
           </div>
 
+          <!-- Orçamento -->
           <div class="tab-pane fade" id="pills-orcamento" role="tabpanel" aria-labelledby="pills-orcamento-tab" tabindex="1">
             <div class="row g-3">
               <div class="col-md-8">
@@ -96,7 +98,8 @@
               <textarea id="resultado" class="form-control" rows="15"></textarea>
             </div>
           </div>
-      
+          
+          <!-- Agendamento -->
           <div class="tab-pane fade" id="pills-agendamento" role="tabpanel" aria-labelledby="pills-agendamento-tab" tabindex="2">
             <div class="d-grid gap-2 mt-4">
               <button class="btn btn-primary" onclick="gerarSolicitacaoDados()">Solicitar Dados ao Cliente</button>
@@ -180,6 +183,7 @@
             </div>
           </div>
 
+          <!-- Estoque -->
           <div class="tab-pane fade" id="pills-estoque" role="tabpanel" aria-labelledby="pills-estoque-tab" tabindex="3">
             <div class="card mb-3">
               <div class="card-body">
@@ -222,6 +226,7 @@
             </table>
           </div>
 
+          <!-- Catálogo -->
           <div class="tab-pane fade" id="pills-catalogo" role="tabpanel" aria-labelledby="pills-catalogo-tab" tabindex="4">
               <div class="card mb-3">
                 <div class="card-body">
@@ -485,7 +490,11 @@
     const taxa = taxaVenda + taxas[parcelas];
     return valor / (1 - taxa / 100);
   }
-
+  
+  function arredondar(valor) {
+      return Math.floor(valor * 10) / 10;
+  }
+  
   function gerarMensagemOrcamento() {
     if (itensOrcamento.length === 0) {
       alert('Adicione pelo menos um item no Orçamento!');
@@ -515,11 +524,11 @@
       return `• ${item.nome}`;
     }).join('\n');
 
-    const valor1 = (calcularValor(total, 1) / 1).toFixed(2);
-    const valor2 = (calcularValor(total, 2) / 2).toFixed(2);
-    const valor3 = (calcularValor(total, 3) / 3).toFixed(2);
-    const valor4 = (calcularValor(total, 4) / 4).toFixed(2);
-    const valor5 = (calcularValor(total, 5) / 5).toFixed(2);
+    const valor1 = arredondar(calcularValor(total, 1) / 1).toFixed(2);
+    const valor2 = arredondar(calcularValor(total, 2) / 2).toFixed(2);
+    const valor3 = arredondar(calcularValor(total, 3) / 3).toFixed(2);
+    const valor4 = arredondar(calcularValor(total, 4) / 4).toFixed(2);
+    const valor5 = arredondar(calcularValor(total, 5) / 5).toFixed(2);
 
     ultimoOrcamento = {
       total: total,
@@ -924,7 +933,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
               </br>
               <label><strong>Valor à vista:</strong></label>
               <table>
-                <tr><td>R$ ${item.orcamento.total} no PIX ou Dinheiro</td></tr>
+                <tr><td>R$ ${item.orcamento.total.toFixed(2)} no PIX ou Dinheiro</td></tr>
               </table>
 
               <div class="d-flex gap-2">

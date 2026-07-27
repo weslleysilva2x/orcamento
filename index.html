@@ -493,7 +493,7 @@
     
     const res = (valor / (1 - taxa / 100) / parcelas);
 
-    return (Math.floor(res * 10) / 10).toFixed(2);
+    return (Math.ceil(res * 10) / 10).toFixed(2);
   }
   
   function gerarMensagemOrcamento() {
@@ -525,11 +525,11 @@
       return `• ${item.nome}`;
     }).join('\n');
 
-    const valor1 = calcularValor(total, 1)
-    const valor2 = calcularValor(total, 2)
-    const valor3 = calcularValor(total, 3)
-    const valor4 = calcularValor(total, 4)
-    const valor5 = calcularValor(total, 5)
+    const valor1 = calcularValor(total, 1);
+    const valor2 = calcularValor(total, 2);
+    const valor3 = calcularValor(total, 3);
+    const valor4 = calcularValor(total, 4);
+    const valor5 = calcularValor(total, 5);
 
     ultimoOrcamento = {
       total: total,
@@ -610,8 +610,8 @@ Após o envio dos dados, retornaremos com a confirmação do agendamento. 😊`;
     
     const link_maps = `${logradouro}, ${numero}, ${bairro} - ${cidade}/${uf} (CEP: ${cep})`;
 
-    if (!nome || !cpf || !telefone || !endereco || !cep || !data || !hora || !ultimoOrcamento.itens) {
-      alert('Atenção! Gere o orçamento antes e preencha todos os dados do cliente.');
+    if (!nome || !telefone || !endereco || !cep || !data || !hora || !ultimoOrcamento.itens) {
+      alert('Atenção! Gere o orçamento antes e preencha os dados obrigatórios do cliente.');
       return;
     }
 
@@ -949,7 +949,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
   }
 
   async function salvarAgendamento(nome, cpf, telefone, endereco, data, hora, orcamento, linkMaps) {
-    const { error } = await supabaseClient.from('agenda').insert({nome, telefone, endereco, data, horario: hora, orcamento, link_maps: linkMaps});
+    const { error } = await supabaseClient.from('agenda').insert({nome, cpf, telefone, endereco, data, horario: hora, orcamento, link_maps: linkMaps});
 
     if (error) {
       console.error(error);

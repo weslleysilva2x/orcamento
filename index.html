@@ -480,6 +480,7 @@
 
   function calcularValor(valor, parcelas) {
     const taxaVenda = 2.99;
+    
     const taxas = {
       1: 4.98,
       2: 6.91,
@@ -487,12 +488,12 @@
       4: 9.65,
       5: 10.98
     };
+    
     const taxa = taxaVenda + taxas[parcelas];
-    return valor / (1 - taxa / 100);
-  }
-  
-  function arredondar(valor) {
-      return Math.floor(valor * 10) / 10;
+    
+    const res = (valor / (1 - taxa / 100) / parcelas);
+
+    return (Math.floor(res * 10) / 10).toFixed(2);
   }
   
   function gerarMensagemOrcamento() {
@@ -524,11 +525,11 @@
       return `• ${item.nome}`;
     }).join('\n');
 
-    const valor1 = arredondar(calcularValor(total, 1) / 1).toFixed(2);
-    const valor2 = arredondar(calcularValor(total, 2) / 2).toFixed(2);
-    const valor3 = arredondar(calcularValor(total, 3) / 3).toFixed(2);
-    const valor4 = arredondar(calcularValor(total, 4) / 4).toFixed(2);
-    const valor5 = arredondar(calcularValor(total, 5) / 5).toFixed(2);
+    const valor1 = calcularValor(total, 1)
+    const valor2 = calcularValor(total, 2)
+    const valor3 = calcularValor(total, 3)
+    const valor4 = calcularValor(total, 4)
+    const valor5 = calcularValor(total, 5)
 
     ultimoOrcamento = {
       total: total,

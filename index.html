@@ -7,6 +7,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -908,45 +909,119 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
 
       lista.innerHTML += `
         <div class="col-md-6">
-          <div class="card shadow-sm card-agenda h-100">
-            <div class="card-body">
-              <h6 class="card-title">📅 ${data} às ${item.horario}</h6>
-              <p class="mb-1"><strong>${item.nome}</strong></p>
-              <p class="mb-1">${item.telefone}</p>
-              <p class="mb-3">${item.endereco}</p>
-              <button class="btn btn-primary btn-sm" onclick="window.open('${item.link_maps}', '_blank' )">Ver Mapa</button>
-              <hr/>
-              <div class="mb-3">
-                <strong>Itens:</strong>
-                <div class="itens-agenda">
-                  ${item.orcamento.itens}
-                </div>
-              </div>
+          <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-success text-white rounded-top-4 d-flex justify-content-between align-items-center">
+            <div>
+            <i class="bi bi-calendar-event"></i>
+            <strong>${data}</strong> às <strong>${item.horario}</strong>
+          </div>
+        </div>
 
-              <label><strong>Parcelamento no cartão de crédito:</strong></label>
-              <table>
-                <tr><td>1x de R$ ${item.orcamento.valor1}</td></tr>
-                <tr><td>2x de R$ ${item.orcamento.valor2}</td></tr>
-                <tr><td>3x de R$ ${item.orcamento.valor3}</td></tr>
-                <tr><td>4x de R$ ${item.orcamento.valor4}</td></tr>
-                <tr><td>5x de R$ ${item.orcamento.valor5}</td></tr>
-              </table>
-              </br>
-              <label><strong>Valor à vista:</strong></label>
-              <table>
-                <tr><td>R$ ${item.orcamento.total.toFixed(2)} no PIX ou Dinheiro</td></tr>
-              </table>
-
-              <div class="d-flex gap-2">
-                <button class="btn btn-danger btn-sm" onclick="cancelarAgendamento(${item.id})">Cancelar</button>
-                <button class="btn btn-success btn-sm" onclick="finalizarServico(${item.id})">Finalizar</button>
+        <div class="card-body">
+          <div class="d-flex align-items-start mb-3">
+            <div class="rounded-circle bg-light text-success d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+              <i class="bi bi-person-fill fs-5"></i>
+            </div>
+            <div class="ms-3 flex-grow-1">
+              <h5 class="mb-1">${item.nome}</h5>
+              <div class="text-muted small">
+                <i class="bi bi-telephone-fill"></i>
+                ${item.telefone}
               </div>
             </div>
           </div>
+
+          <div class="bg-light rounded-3 p-3 mb-3">
+            <div class="fw-semibold mb-2">
+              <i class="bi bi-geo-alt-fill text-danger"></i>
+              Endereço
+            </div>
+
+            <div class="small">
+              ${item.endereco}
+            </div>
+            
+            <button class="btn btn-outline-primary btn-sm mt-3" onclick="window.open('${item.link_maps}','_blank')">
+              <i class="bi bi-map"></i>
+              Ver no Maps
+            </button>
+          </div>
+
+          <div class="mb-4">
+            <div class="fw-semibold mb-2">
+              <i class="bi bi-box-seam"></i>
+              Itens
+            </div>
+            
+            <div class="bg-light rounded-3 p-3">
+              ${item.orcamento.itens.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="fw-semibold mb-2">
+              <i class="bi bi-credit-card"></i>
+              Parcelamento no cartão
+            </div>
+
+            <div class="list-group list-group-flush border rounded-3">
+              <div class="list-group-item d-flex justify-content-between">
+                <span>1x</span>
+                <strong>R$ ${item.orcamento.valor1}</strong>
+              </div>
+
+              <div class="list-group-item d-flex justify-content-between">
+                <span>2x</span>
+                <strong>R$ ${item.orcamento.valor2}</strong>
+              </div>
+
+              <div class="list-group-item d-flex justify-content-between">
+                <span>3x</span>
+                <strong>R$ ${item.orcamento.valor3}</strong>
+              </div>
+
+              <div class="list-group-item d-flex justify-content-between">
+                <span>4x</span>
+                <strong>R$ ${item.orcamento.valor4}</strong>
+              </div>
+
+              <div class="list-group-item d-flex justify-content-between">
+                <span>5x</span>
+                <strong>R$ ${item.orcamento.valor5}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-success rounded-4 text-center mb-4">
+            <i class="bi bi-cash-stack fs-2"></i>
+
+            <div class="text-uppercase fw-semibold">
+              Valor à vista
+            </div>
+
+            <div class="display-6 fw-bold">
+              R$ ${item.orcamento.total.toFixed(2)}
+            </div>
+
+            <small>PIX ou Dinheiro</small>
+          </div>
+
+          <div class="d-flex gap-2 justify-content-end">
+            <button class="btn btn-outline-danger" onclick="cancelarAgendamento(${item.id})">
+              <i class="bi bi-x-circle"></i>
+              Cancelar
+            </button>
+            
+            <button class="btn btn-success" onclick="finalizarServico(${item.id})">
+              <i class="bi bi-check-circle"></i>
+              Finalizar
+            </button>
+          </div>
         </div>
-      `;
-    });
-  }
+      </div>
+    </div>`;
+  });
+}
 
   async function salvarAgendamento(nome, cpf, telefone, endereco, data, hora, orcamento, linkMaps) {
     const { error } = await supabaseClient.from('agenda').insert({nome, cpf, telefone, endereco, data, horario: hora, orcamento, link_maps: linkMaps});

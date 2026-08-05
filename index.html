@@ -484,7 +484,7 @@
   }
 
   async function carregarAgenda() {
-    const { data, error } = await supabaseClient.from('agenda').select('*').eq('finalizado', false).order('data').order('horario');
+    const { data, error } = await supabaseClient.from('agenda').select('*').eq('finalizado', false).eq('cancelado', false).order('data').order('horario');
 
     if (error) {
       console.error(error);
@@ -1139,7 +1139,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
       return;
     }
 
-    const { error } = await supabaseClient.from('agenda').delete().eq('id', id);
+    const { error } = await supabaseClient.from('agenda').update({cancelado: true}).eq('id', id);
 
     if (error) {
       console.error(error);

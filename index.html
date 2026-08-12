@@ -990,8 +990,10 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
             </div>
             <div class="ms-3 flex-grow-1">
               <h5 class="mb-1">${item.nome}</h5>
-              <div class="text-muted small">
-                <i class="bi bi-telephone-fill"></i>
+              <div class="text-muted small d-flex align-items-center gap-2">
+                <a href="https://wa.me/55${item.telefone.replace(/\D/g, '')}" target="_blank" class="btn btn-success btn-sm" title="Conversar pelo WhatsApp">
+                  <i class="bi bi-whatsapp"></i>
+                </a>
                 ${item.telefone}
               </div>
             </div>

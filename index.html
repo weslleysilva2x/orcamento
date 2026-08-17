@@ -1018,99 +1018,137 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
             </div>
           </div>
 
-          ${item.urls_imagens && item.urls_imagens.length > 0 ? `
-            <div id="carouselAgenda${item.id}" class="carousel slide mb-4">
-
-              <div class="carousel-inner rounded-4">
-
-                ${item.urls_imagens.map((imagem, indice) => `
-                  <div class="carousel-item ${indice === 0 ? 'active' : ''}">
-                    <img src="${imagem}" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Foto ${indice + 1}">
-                  </div>
-                `).join('')}
-
-              </div>
-
-              ${item.urls_imagens.length > 1 ? `
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselAgenda${item.id}" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon"></span>
-                </button>
-
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselAgenda${item.id}" data-bs-slide="next">
-                  <span class="carousel-control-next-icon"></span>
-                </button>
-              ` : ''}
-
-            </div>
-          ` : ''}
-
+          ${item.imagens ? `
             <div class="mb-4">
-              <div class="fw-semibold mb-2">
-                <i class="bi bi-credit-card"></i>
-                Parcelamento no cartão
-              </div>
+              <div id="carouselAgenda${item.id}" class="carousel slide">
 
-              <div class="list-group list-group-flush border rounded-3">
-                <div class="list-group-item d-flex justify-content-between">
-                  <span>1x</span>
-                  <strong>R$ ${item.orcamento.valor1}</strong>
-                  <span>Total: <strong>R$ ${(item.orcamento.valor1 * 1).toFixed(2)}</strong><span>
+                <div class="carousel-inner rounded-4">
+
+                  ${item.imagens
+                    .split(';')
+                    .filter(imagem => imagem.trim() !== '')
+                    .map((imagem, indice) => {
+
+                      const { data } = supabaseClient
+                        .storage
+                        .from('imagens')
+                        .getPublicUrl(imagem.trim());
+
+                      return `
+                        <div class="carousel-item ${indice === 0 ? 'active' : ''}">
+                          <img
+                            src="${data.publicUrl}"
+                            class="d-block w-100"
+                            style="height: 300px; object-fit: cover;"
+                            alt="Foto ${indice + 1}">
+                        </div>
+                      `;
+
+                    }).join('')}
+
                 </div>
 
-                <div class="list-group-item d-flex justify-content-between">
-                  <span>2x</span>
-                  <strong>R$ ${item.orcamento.valor2}</strong>
-                  <span>Total: <strong>R$ ${(item.orcamento.valor2 * 2).toFixed(2)}</strong><span>
-                </div>
+                ${item.imagens.split(';').filter(imagem => imagem.trim() !== '').length > 1 ? `
+                  <button
+                    class="carousel-control-prev"
+                    type="button"
+                    data-bs-target="#carouselAgenda${item.id}"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                    <span class="visually-hidden">Anterior</span>
+                  </button>
 
-                <div class="list-group-item d-flex justify-content-between">
-                  <span>3x</span>
-                  <strong>R$ ${item.orcamento.valor3}</strong>
-                  <span>Total: <strong>R$ ${(item.orcamento.valor3 * 3).toFixed(2)}</strong><span>
-                </div>
+                  <button
+                    class="carousel-control-next"
+                    type="button"
+                    data-bs-target="#carouselAgenda${item.id}"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                    <span class="visually-hidden">Próxima</span>
+                  </button>
+                ` : ''}
 
-                <div class="list-group-item d-flex justify-content-between">
-                  <span>4x</span>
-                  <strong>R$ ${item.orcamento.valor4}</strong>
-                  <span>Total: <strong>R$ ${(item.orcamento.valor4 * 4).toFixed(2)}</strong><span>
-                </div>
-
-                <div class="list-group-item d-flex justify-content-between">
-                  <span>5x</span>
-                  <strong>R$ ${item.orcamento.valor5}</strong>
-                  <span>Total: <strong>R$ ${(item.orcamento.valor5 * 5).toFixed(2)}</strong><span>
-                </div>
               </div>
             </div>
 
-            <div class="alert alert-success rounded-4 text-center mb-4">
-              <i class="bi bi-cash-stack fs-2"></i>
+          ` : `
+            <div class="mb-4">
 
-              <div class="text-uppercase fw-semibold">
-                Valor à vista
-              </div>
+              <button type="button" class="btn btn-outline-primary" onclick="adicionarFotosAgenda(${item.id})">
+                <i class="bi bi-camera"></i>
+                Inserir fotos dos itens antes
+              </button>
 
-              <div class="display-6 fw-bold">
-                R$ ${item.orcamento.total.toFixed(2)}
-              </div>
-
-              <small>PIX ou Dinheiro</small>
             </div>
+          `}
 
-            <div class="d-flex gap-2 justify-content-end">
-              <button class="btn btn-outline-danger" onclick="cancelarAgendamento(${item.id})">
-                <i class="bi bi-x-circle"></i>
-                Cancelar
-              </button>
+          <div class="mb-4">
+            <div class="fw-semibold mb-2">
+              <i class="bi bi-credit-card"></i>
+              Parcelamento no cartão
+            </div>
+            
+            <div class="list-group list-group-flush border rounded-3">
+              <div class="list-group-item d-flex justify-content-between">
+                <span>1x</span>
+                <strong>R$ ${item.orcamento.valor1}</strong>
+                <span>Total: <strong>R$ ${(item.orcamento.valor1 * 1).toFixed(2)}</strong><span>
+              </div>
 
-              <button class="btn btn-success" onclick="finalizarServico(${item.id})">
-                <i class="bi bi-check-circle"></i>
-                Finalizar
-              </button>
+              <div class="list-group-item d-flex justify-content-between">
+                <span>2x</span>
+                <strong>R$ ${item.orcamento.valor2}</strong>
+                <span>Total: <strong>R$ ${(item.orcamento.valor2 * 2).toFixed(2)}</strong><span>
+              </div>
+
+              <div class="list-group-item d-flex justify-content-between">
+                <span>3x</span>
+                <strong>R$ ${item.orcamento.valor3}</strong>
+                <span>Total: <strong>R$ ${(item.orcamento.valor3 * 3).toFixed(2)}</strong><span>
+              </div>
+
+              <div class="list-group-item d-flex justify-content-between">
+                <span>4x</span>
+                <strong>R$ ${item.orcamento.valor4}</strong>
+                <span>Total: <strong>R$ ${(item.orcamento.valor4 * 4).toFixed(2)}</strong><span>
+              </div>
+
+              <div class="list-group-item d-flex justify-content-between">
+                <span>5x</span>
+                <strong>R$ ${item.orcamento.valor5}</strong>
+                <span>Total: <strong>R$ ${(item.orcamento.valor5 * 5).toFixed(2)}</strong><span>
+              </div>
             </div>
           </div>
+
+          <div class="alert alert-success rounded-4 text-center mb-4">
+            <i class="bi bi-cash-stack fs-2"></i>
+
+            <div class="text-uppercase fw-semibold">
+              Valor à vista
+            </div>
+
+            <div class="display-6 fw-bold">
+              R$ ${item.orcamento.total.toFixed(2)}
+            </div>
+
+            <small>PIX ou Dinheiro</small>
+          </div>
+
+          <div class="d-flex gap-2 justify-content-end">
+            <button class="btn btn-outline-danger" onclick="cancelarAgendamento(${item.id})">
+              <i class="bi bi-x-circle"></i>
+              Cancelar
+            </button>
+
+            <button class="btn btn-success" onclick="finalizarServico(${item.id})">
+              <i class="bi bi-check-circle"></i>
+              Finalizar
+            </button>
+          </div>
         </div>
-      </div>`;
+      </div>
+    </div>`;
     });
   }
 
@@ -1252,5 +1290,81 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     });
   }
 
+  async function adicionarFotosAgenda(idAgenda) {
+
+    const input = document.createElement('input');
+
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+
+    input.onchange = async function() {
+
+      const arquivos = Array.from(input.files);
+
+      if (arquivos.length === 0) {
+        return;
+      }
+
+      const imagensExistentes = agenda
+        .find(item => item.id === idAgenda)
+        ?.imagens;
+
+      const listaImagens = imagensExistentes
+        ? imagensExistentes
+            .split(';')
+            .filter(imagem => imagem.trim() !== '')
+        : [];
+
+      for (const arquivo of arquivos) {
+
+        const extensao = arquivo.name
+          .split('.')
+          .pop()
+          .toLowerCase();
+
+        const numero = listaImagens.length + 1;
+
+        const nomeArquivo = `${idAgenda}_${numero}.${extensao}`;
+
+        const caminho = `agenda/${idAgenda}/${nomeArquivo}`;
+
+        const { error } = await supabaseClient
+          .storage
+          .from('imagens')
+          .upload(caminho, arquivo, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (error) {
+          console.error(error);
+          alert(`Erro ao enviar ${nomeArquivo}.`);
+          continue;
+        }
+
+        listaImagens.push(caminho);
+      }
+
+      const imagens = listaImagens.join(';');
+
+      const { error } = await supabaseClient
+        .from('agenda')
+        .update({
+          imagens: imagens
+        })
+        .eq('id', idAgenda);
+
+      if (error) {
+        console.error(error);
+        alert('Erro ao salvar as imagens.');
+        return;
+      }
+
+      await carregarAgenda();
+    };
+
+    input.click();
+  }
 </script>
 </html>

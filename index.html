@@ -8,9 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -561,9 +559,7 @@
     };
     
     const taxa = taxaVenda + taxas[parcelas];
-    
     const res = (valor / (1 - taxa / 100) / parcelas);
-
     return (Math.ceil(res * 10) / 10).toFixed(2);
   }
   
@@ -689,7 +685,6 @@ Após o envio dos dados, retornaremos com a confirmação do agendamento. 😊`;
     }
 
     const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
-
     const linkMaps =`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(link_maps)}`;
 
   const texto =
@@ -820,7 +815,6 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     estoque[produto].quantidade = novaQuantidade;
 
     await updateProdutoEstoque(produto, novaQuantidade);
-
     await carregarEstoque();
 
     document.getElementById('movQuantidade').value = '';
@@ -1059,24 +1053,17 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
                 </div>
 
                 ${item.imagens.split(';').filter(imagem => imagem.trim() !== '').length > 1 ? `
-                  <button
-                    class="carousel-control-prev"
-                    type="button"
-                    data-bs-target="#carouselAgenda${item.id}"
-                    data-bs-slide="prev">
+                  <button class="carousel-control-prev" type="button" data-bs-target="#carouselAgenda${item.id}" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon"></span>
                     <span class="visually-hidden">Anterior</span>
                   </button>
 
-                  <button
-                    class="carousel-control-next"
-                    type="button"
-                    data-bs-target="#carouselAgenda${item.id}"
-                    data-bs-slide="next">
+                  <button class="carousel-control-next" type="button" data-bs-target="#carouselAgenda${item.id}" data-bs-slide="next">
                     <span class="carousel-control-next-icon"></span>
                     <span class="visually-hidden">Próxima</span>
                   </button>
-                ` : ''}
+                ` : ''
+                }
 
               </div>
             </div>
@@ -1334,9 +1321,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
           .toLowerCase();
 
         const numero = listaImagens.length + 1;
-
         const nomeArquivo = `${idAgenda}_${numero}.${extensao}`;
-
         const caminho = `agenda/${idAgenda}/${nomeArquivo}`;
 
         const { error } = await supabaseClient
@@ -1358,12 +1343,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
 
       const imagens = listaImagens.join(';');
 
-      const { error } = await supabaseClient
-        .from('agenda')
-        .update({
-          imagens: imagens
-        })
-        .eq('id', idAgenda);
+      const { error } = await supabaseClient.from('agenda').update({imagens: imagens}).eq('id', idAgenda);
 
       if (error) {
         console.error(error);

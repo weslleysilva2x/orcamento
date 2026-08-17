@@ -235,6 +235,12 @@
                   </select>
                 </div>
               </div>
+              
+              <div class="col-md-12">
+                <label class="form-label">Fotos dos itens:</label>
+                <input type="file" id="agImagem" class="form-control" accept="image/*" multiple>
+                <div id="previewImagem" class="mt-3"></div>
+              </div>
 
               <button class="btn btn-success" onclick="gerarConfirmacaoAgendamento()">Confirmar Agendamento</button>
               <button class="btn btn-secondary" onclick="copiarTexto('mensagem-agendamento')">Copiar Texto</button>
@@ -301,10 +307,7 @@
                         Item
                       </label>
 
-                      <input
-                        type="text"
-                        id="novoItem"
-                        class="form-control">
+                      <input type="text" id="novoItem" class="form-control">
                     </div>
 
                     <div class="col-md-4">
@@ -312,17 +315,11 @@
                         Valor
                       </label>
 
-                      <input
-                        type="number"
-                        id="novoValor"
-                        class="form-control"
-                        step="0.01">
+                      <input type="number" id="novoValor" class="form-control" step="0.01">
                     </div>
 
                     <div class="col-md-12 d-grid">
-                      <button
-                        class="btn btn-success"
-                        onclick="adicionarItemCatalogo()">
+                      <button class="btn btn-success" onclick="adicionarItemCatalogo()">
                         Adicionar Item
                       </button>
                     </div>
@@ -423,10 +420,7 @@
   }
 
   async function carregarEstoque() {
-    const { data, error } = await supabaseClient
-      .from('estoque')
-      .select('*')
-      .order('produto');
+    const { data, error } = await supabaseClient.from('estoque').select('*').order('produto');
 
     if (error) {
       console.error(error);
@@ -451,6 +445,10 @@
     if (error) {
       console.error(error);
       return;
+    }
+
+    for (const item of data) {
+      item.urls_imagens = obterUrlsImagens(item.imagens);
     }
 
     agenda = data;
@@ -582,10 +580,10 @@
 
     const itensSelecionados = Object.values(agrupados).map(item => {
       if (item.quantidade > 1) {
-        return `• ${item.nome} (${item.quantidade}x)`;
+        return `${item.nome} (${item.quantidade}x)`;
       }
 
-      return `• ${item.nome}`;
+      return `${item.nome}`;
     }).join('\n');
 
     const valor1 = calcularValor(total, 1);
@@ -862,17 +860,11 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
           <td>${moeda(catalogo[nome])}</td>
           <td>
 
-            <button
-              class="btn btn-warning btn-sm"
-              style="margin: 2px 0; width: 65px;"
-              onclick="editarItemCatalogo('${nome}')">
+            <button class="btn btn-warning btn-sm" style="margin: 2px 0; width: 65px;" onclick="editarItemCatalogo('${nome}')">
               Editar
             </button>
 
-            <button
-              class="btn btn-danger btn-sm"
-              style="margin: 2px 0; width: 65px;"
-              onclick="removerItemCatalogo('${nome}')">
+            <button class="btn btn-danger btn-sm" style="margin: 2px 0; width: 65px;" onclick="removerItemCatalogo('${nome}')">
               Excluir
             </button>
 
@@ -1026,83 +1018,126 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
             </div>
           </div>
 
-          <div class="mb-4">
-            <div class="fw-semibold mb-2">
-              <i class="bi bi-credit-card"></i>
-              Parcelamento no cartão
+          ${item.urls_imagens && item.urls_imagens.length > 0 ? `
+            <div id="carouselAgenda${item.id}" class="carousel slide mb-4">
+
+              <div class="carousel-inner rounded-4">
+
+                ${item.urls_imagens.map((imagem, indice) => `
+                  <div class="carousel-item ${indice === 0 ? 'active' : ''}">
+                    <img src="${imagem}" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Foto ${indice + 1}">
+                  </div>
+                `).join('')}
+
+              </div>
+
+              ${item.urls_imagens.length > 1 ? `
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselAgenda${item.id}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselAgenda${item.id}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              ` : ''}
+
+            </div>
+          ` : ''}
+
+            <div class="mb-4">
+              <div class="fw-semibold mb-2">
+                <i class="bi bi-credit-card"></i>
+                Parcelamento no cartão
+              </div>
+
+              <div class="list-group list-group-flush border rounded-3">
+                <div class="list-group-item d-flex justify-content-between">
+                  <span>1x</span>
+                  <strong>R$ ${item.orcamento.valor1}</strong>
+                  <span>Total: <strong>R$ ${(item.orcamento.valor1 * 1).toFixed(2)}</strong><span>
+                </div>
+
+                <div class="list-group-item d-flex justify-content-between">
+                  <span>2x</span>
+                  <strong>R$ ${item.orcamento.valor2}</strong>
+                  <span>Total: <strong>R$ ${(item.orcamento.valor2 * 2).toFixed(2)}</strong><span>
+                </div>
+
+                <div class="list-group-item d-flex justify-content-between">
+                  <span>3x</span>
+                  <strong>R$ ${item.orcamento.valor3}</strong>
+                  <span>Total: <strong>R$ ${(item.orcamento.valor3 * 3).toFixed(2)}</strong><span>
+                </div>
+
+                <div class="list-group-item d-flex justify-content-between">
+                  <span>4x</span>
+                  <strong>R$ ${item.orcamento.valor4}</strong>
+                  <span>Total: <strong>R$ ${(item.orcamento.valor4 * 4).toFixed(2)}</strong><span>
+                </div>
+
+                <div class="list-group-item d-flex justify-content-between">
+                  <span>5x</span>
+                  <strong>R$ ${item.orcamento.valor5}</strong>
+                  <span>Total: <strong>R$ ${(item.orcamento.valor5 * 5).toFixed(2)}</strong><span>
+                </div>
+              </div>
             </div>
 
-            <div class="list-group list-group-flush border rounded-3">
-              <div class="list-group-item d-flex justify-content-between">
-                <span>1x</span>
-                <strong>R$ ${item.orcamento.valor1}</strong>
-                <span>Total: <strong>R$ ${(item.orcamento.valor1 * 1).toFixed(2)}</strong><span>
+            <div class="alert alert-success rounded-4 text-center mb-4">
+              <i class="bi bi-cash-stack fs-2"></i>
+
+              <div class="text-uppercase fw-semibold">
+                Valor à vista
               </div>
 
-              <div class="list-group-item d-flex justify-content-between">
-                <span>2x</span>
-                <strong>R$ ${item.orcamento.valor2}</strong>
-                <span>Total: <strong>R$ ${(item.orcamento.valor2 * 2).toFixed(2)}</strong><span>
+              <div class="display-6 fw-bold">
+                R$ ${item.orcamento.total.toFixed(2)}
               </div>
 
-              <div class="list-group-item d-flex justify-content-between">
-                <span>3x</span>
-                <strong>R$ ${item.orcamento.valor3}</strong>
-                <span>Total: <strong>R$ ${(item.orcamento.valor3 * 3).toFixed(2)}</strong><span>
-              </div>
-
-              <div class="list-group-item d-flex justify-content-between">
-                <span>4x</span>
-                <strong>R$ ${item.orcamento.valor4}</strong>
-                <span>Total: <strong>R$ ${(item.orcamento.valor4 * 4).toFixed(2)}</strong><span>
-              </div>
-
-              <div class="list-group-item d-flex justify-content-between">
-                <span>5x</span>
-                <strong>R$ ${item.orcamento.valor5}</strong>
-                <span>Total: <strong>R$ ${(item.orcamento.valor5 * 5).toFixed(2)}</strong><span>
-              </div>
-            </div>
-          </div>
-
-          <div class="alert alert-success rounded-4 text-center mb-4">
-            <i class="bi bi-cash-stack fs-2"></i>
-
-            <div class="text-uppercase fw-semibold">
-              Valor à vista
+              <small>PIX ou Dinheiro</small>
             </div>
 
-            <div class="display-6 fw-bold">
-              R$ ${item.orcamento.total.toFixed(2)}
+            <div class="d-flex gap-2 justify-content-end">
+              <button class="btn btn-outline-danger" onclick="cancelarAgendamento(${item.id})">
+                <i class="bi bi-x-circle"></i>
+                Cancelar
+              </button>
+
+              <button class="btn btn-success" onclick="finalizarServico(${item.id})">
+                <i class="bi bi-check-circle"></i>
+                Finalizar
+              </button>
             </div>
-
-            <small>PIX ou Dinheiro</small>
-          </div>
-
-          <div class="d-flex gap-2 justify-content-end">
-            <button class="btn btn-outline-danger" onclick="cancelarAgendamento(${item.id})">
-              <i class="bi bi-x-circle"></i>
-              Cancelar
-            </button>
-            
-            <button class="btn btn-success" onclick="finalizarServico(${item.id})">
-              <i class="bi bi-check-circle"></i>
-              Finalizar
-            </button>
           </div>
         </div>
-      </div>
-    </div>`;
-  });
-}
+      </div>`;
+    });
+  }
 
   async function salvarAgendamento(nome, cpf, telefone, endereco, data, hora, orcamento, linkMaps) {
-    const { error } = await supabaseClient.from('agenda').insert({nome, cpf, telefone, endereco, data, horario: hora, orcamento, link_maps: linkMaps});
+
+    const { data: novoAgendamento, error } = await supabaseClient.from('agenda').insert({nome,cpf,telefone,endereco,data,horario: hora,orcamento,link_maps: linkMaps}).select().single();
 
     if (error) {
       console.error(error);
+      alert('Erro ao salvar agendamento.');
       return;
     }
+
+    const caminhosImagens = await enviarImagensAgenda(novoAgendamento.id);
+
+    if (caminhosImagens) {
+
+      const { error: erroImagens } = await supabaseClient.from('agenda').update({imagens: caminhosImagens}).eq('id', novoAgendamento.id);
+
+      if (erroImagens) {
+        console.error(erroImagens);
+        alert('Agendamento salvo, mas houve um erro ao salvar as imagens.');
+      }
+    }
+
+    document.getElementById('agImagem').value = '';
+    document.getElementById('previewImagem').innerHTML = '';
 
     await carregarAgenda();
   }
@@ -1135,6 +1170,86 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     }
 
     await carregarAgenda();
+  }
+
+  document.getElementById('agImagem').addEventListener('change', function(event) {
+
+    const arquivos = Array.from(event.target.files);
+    const preview = document.getElementById('previewImagem');
+
+    preview.innerHTML = '';
+
+    if (arquivos.length === 0) {
+      return;
+    }
+
+    const lista = document.createElement('div');
+    lista.className = 'list-group';
+
+    arquivos.forEach((arquivo, indice) => {
+
+      const item = document.createElement('div');
+      item.className = 'list-group-item d-flex align-items-center gap-2';
+
+      item.innerHTML = `
+        <i class="bi bi-image"></i>
+        <span>${indice + 1}. ${arquivo.name}</span>
+      `;
+
+      lista.appendChild(item);
+    });
+
+    preview.appendChild(lista);
+  });
+
+  async function enviarImagensAgenda(idAgenda) {
+
+    const input = document.getElementById('agImagem');
+    const arquivos = Array.from(input.files);
+
+    if (arquivos.length === 0) {
+      return null;
+    }
+
+    const imagens = [];
+
+    for (let i = 0; i < arquivos.length; i++) {
+
+      const arquivo = arquivos[i];
+
+      const extensao = arquivo.name
+        .split('.')
+        .pop()
+        .toLowerCase();
+
+      const nomeArquivo = `${idAgenda}_${i + 1}.${extensao}`;
+      const caminho = `agenda/${idAgenda}/${nomeArquivo}`;
+
+      const { error } = await supabaseClient.storage.from('imagens').upload(caminho, arquivo, {cacheControl: '3600',upsert: true});
+
+      if (error) {
+        console.error(`Erro ao enviar ${nomeArquivo}:`, error);
+        alert(`Erro ao enviar a imagem ${nomeArquivo}.`);
+        continue;
+      }
+
+      imagens.push(caminho);
+    }
+
+    return imagens.join(';');
+  }
+
+  function obterUrlsImagens(imagens) {
+
+    if (!imagens) {
+      return [];
+    }
+
+    return imagens.split(';').filter(imagem => imagem.trim() !== '').map(imagem => {
+      const { data } = supabaseClient.storage.from('imagens').getPublicUrl(imagem.trim());
+
+      return data.publicUrl;
+    });
   }
 
 </script>

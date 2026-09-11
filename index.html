@@ -348,6 +348,376 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="modalEditarAgenda" tabindex="-1">
+
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square"></i>
+                    Editar Agendamento
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <input type="hidden" id="editId">
+
+
+                <!-- DADOS DO CLIENTE -->
+
+                <h5 class="mb-3">
+                    <i class="bi bi-person"></i>
+                    Dados do Cliente
+                </h5>
+
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Nome
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editNome"
+                            class="form-control">
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            CPF
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editCPF"
+                            class="form-control"
+                            maxlength="14"
+                            oninput="formatarCPF(event)">
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Telefone
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editTelefone"
+                            class="form-control"
+                            maxlength="15"
+                            oninput="formatarTelefone(event)">
+
+                    </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- ENDEREÇO -->
+
+                <h5 class="mb-3">
+                    <i class="bi bi-geo-alt"></i>
+                    Endereço
+                </h5>
+
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            CEP
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editCEP"
+                            class="form-control"
+                            maxlength="9"
+                            oninput="formatarCEP(event)">
+
+                    </div>
+
+
+                    <div class="col-md-9">
+
+                        <label class="form-label">
+                            Endereço Completo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editEndereco"
+                            class="form-control">
+
+                    </div>
+
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Link Google Maps
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editLinkMaps"
+                            class="form-control">
+
+                    </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- DATA -->
+
+                <h5 class="mb-3">
+                    <i class="bi bi-calendar-event"></i>
+                    Agendamento
+                </h5>
+
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Data
+                        </label>
+
+                        <input
+                            type="date"
+                            id="editData"
+                            class="form-control">
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Horário
+                        </label>
+
+                        <select
+                            id="editHorario"
+                            class="form-select">
+
+                            <option value="08:00">08:00</option>
+                            <option value="08:30">08:30</option>
+                            <option value="09:00">09:00</option>
+                            <option value="09:30">09:30</option>
+
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+
+                            <option value="17:00">17:00</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- ORÇAMENTO -->
+
+                <h5 class="mb-3">
+                    <i class="bi bi-cash-stack"></i>
+                    Orçamento
+                </h5>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Itens
+                    </label>
+
+                    <textarea
+                        id="editItens"
+                        class="form-control"
+                        rows="5">
+                    </textarea>
+
+                </div>
+
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Valor à vista
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editTotal"
+                            class="form-control"
+                            step="0.01">
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            1x
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editValor1"
+                            class="form-control"
+                            step="0.01">
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            2x
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editValor2"
+                            class="form-control"
+                            step="0.01">
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            3x
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editValor3"
+                            class="form-control"
+                            step="0.01">
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            4x
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editValor4"
+                            class="form-control"
+                            step="0.01">
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            5x
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editValor5"
+                            class="form-control"
+                            step="0.01">
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    onclick="salvarEdicaoAgenda()">
+
+                    <i class="bi bi-save"></i>
+
+                    Salvar Alterações
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 
 <script>
@@ -1133,6 +1503,11 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
           </div>
 
           <div class="d-flex gap-2 justify-content-end">
+            <button class="btn btn-primary" onclick="editarAgendamento(${item.id})">
+                <i class="bi bi-pencil-square"></i>
+                Editar
+            </button>
+
             <button class="btn btn-outline-danger" onclick="cancelarAgendamento(${item.id})">
               <i class="bi bi-x-circle"></i>
               Cancelar
@@ -1356,6 +1731,83 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
 
     input.click();
   }
+
+  function editarAgendamento(id) {
+    const item = agenda.find(item => item.id === id);
+    if (!item) {
+      alert('Agendamento não encontrado.');
+      return;
+    }
+
+    document.getElementById('editId').value = item.id;
+
+    document.getElementById('editNome').value = item.nome || '';
+    document.getElementById('editCPF').value = item.cpf || '';
+    document.getElementById('editTelefone').value = item.telefone || '';
+
+    document.getElementById('editData').value = item.data || '';
+    document.getElementById('editHorario').value = item.horario || '';
+
+
+    // ORÇAMENTO
+
+    document.getElementById('editItens').value = item.orcamento?.itens || '';
+    document.getElementById('editTotal').value = item.orcamento?.total || '';
+    document.getElementById('editValor1').value = item.orcamento?.valor1 || '';
+    document.getElementById('editValor2').value = item.orcamento?.valor2 || '';
+    document.getElementById('editValor3').value = item.orcamento?.valor3 || '';
+    document.getElementById('editValor4').value = item.orcamento?.valor4 || '';
+    document.getElementById('editValor5').value = item.orcamento?.valor5 || '';
+
+    const modal = new bootstrap.Modal(document.getElementById('modalEditarAgenda'));
+
+    modal.show();
+  }
+
+  async function salvarEdicaoAgenda() {
+    const id = document.getElementById('editId').value;
+
+    const nome = document.getElementById('editNome').value.trim();
+    const cpf = document.getElementById('editCPF').value.trim();
+    const telefone = document.getElementById('editTelefone').value.trim();
+
+    const data = document.getElementById('editData').value;
+    const horario = document.getElementById('editHorario').value;
+
+    const orcamento = {
+      itens: document.getElementById('editItens').value.trim(),
+      total: parseFloat(document.getElementById('editTotal').value) || 0,
+
+      valor1: parseFloat(document.getElementById('editValor1').value) || 0,
+      valor2: parseFloat(document.getElementById('editValor2').value) || 0,
+      valor3: parseFloat(document.getElementById('editValor3').value) || 0,
+      valor4: parseFloat(document.getElementById('editValor4').value) || 0,
+      valor5: parseFloat(document.getElementById('editValor5').value) || 0
+    };
+
+    const { error } = await supabaseClient.from('agenda').update({
+      nome: nome,
+      cpf: cpf,
+      telefone: telefone,
+
+      data: data,
+      horario: horario,
+      orcamento: orcamento
+    }).eq('id', id);
+
+
+    if (error) { alert('Erro ao salvar alterações.');
+      return;
+    }
+
+    const modalElement = document.getElementById('modalEditarAgenda');
+
+    const modal = bootstrap.Modal.getInstance(modalElement);
+
+    modal.hide();
+
+    await carregarAgenda();
+}
 
 </script>
 </html>

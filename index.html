@@ -1097,10 +1097,13 @@ R$ ${Number(ultimoOrcamento.total).toFixed(2)} no PIX ou dinheiro`;
           <div class="card shadow-sm border-0 rounded-4 h-100">
             <div class="card-header bg-success text-white rounded-top-4 d-flex justify-content-between align-items-center">
             <div>
-            <i class="bi bi-calendar-event"></i>
-            <strong> ${data.toLocaleDateString('pt-BR')}</strong> às <strong>${item.horario} ( ${diasSemana[data.getDay()]} )     |     ${item.empresa || ""}</strong>
+              <i class="bi bi-calendar-event"></i>
+              <strong> ${data.toLocaleDateString('pt-BR')}</strong> às <strong>${item.horario} ( ${diasSemana[data.getDay()]} )</strong>
+            </div>
+            <div style="color: black; font-weight: bold; border-radius: 20px; padding: 5px; background-color: ${item.empresa === 'LS' ? 'skyblue' : item.empresa === 'DS' ? 'yellow' : 'transparent'};">
+              ${item.empresa || ""}
+            </div>
           </div>
-        </div>
 
         <div class="card-body">
           <div class="d-flex align-items-start mb-3">

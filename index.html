@@ -165,6 +165,16 @@
             <div class="d-grid gap-2 mt-4">
               <button class="btn btn-primary" onclick="gerarSolicitacaoDados()">Solicitar Dados ao Cliente</button>
               <div class="row g-3">
+
+                <div class="col-md-12">
+                  <label class="form-label">Empresa:</label>
+                  <select id="agEmpresa" class="form-select">
+                    <option value="">Selecione...</option>
+                    <option value="LS">LS</option>
+                    <option value="DS">DS</option>
+                  </select>
+                </div>
+
                 <div class="col-md-6">
                   <label class="form-label">Nome:</label>
                   <input id="agNome" class="form-control">
@@ -596,7 +606,7 @@
   }
 
   function editarValorOrcamento(indice) {
-    const novoValor = prompt('Novo valor:', itensOrcamento[indice].valor.toFixed(2));
+    const novoValor = prompt('Novo valor:', Number(itensOrcamento[indice].valor).toFixed(2));
 
     if (novoValor === null) {
       return;
@@ -737,14 +747,14 @@ Nosso objetivo é simples: entregar *qualidade*, *segurança* e um *resultado* q
 ${itensSelecionados}
 
 💳 *Parcelamento no cartão de crédito*
-1x de R$ ${valor1.toFixed(2)}
-2x de R$ ${valor2.toFixed(2)}
-3x de R$ ${valor3.toFixed(2)}
-4x de R$ ${valor4.toFixed(2)}
-5x de R$ ${valor5.toFixed(2)}
+1x de R$ ${Number(valor1).toFixed(2)}
+2x de R$ ${Number(valor2).toFixed(2)}
+3x de R$ ${Number(valor3).toFixed(2)}
+4x de R$ ${Number(valor4).toFixed(2)}
+5x de R$ ${Number(valor5).toFixed(2)}
 
 💰 *Oferta à vista*
-R$ ${total.toFixed(2)} no PIX ou dinheiro`;
+R$ ${Number(total).toFixed(2)} no PIX ou dinheiro`;
   document.getElementById('resultado').value = texto;
   }
 
@@ -778,6 +788,7 @@ Após o envio dos dados, retornaremos com a confirmação do agendamento. 😊`;
   }
 
   function gerarConfirmacaoAgendamento() {
+    const empresa = document.getElementById('agEmpresa').value;
     const nome = document.getElementById('agNome').value;
     const cpf = document.getElementById('agCPF').value;
     const telefone = document.getElementById('agTelefone').value;
@@ -791,7 +802,7 @@ Após o envio dos dados, retornaremos com a confirmação do agendamento. 😊`;
     
     const link_maps = `${logradouro}, ${numero}, ${bairro} - ${cidade}/${uf} (CEP: ${cep})`;
 
-    if (!nome || !telefone || !endereco || !cep || !data || !hora || !ultimoOrcamento.itens) {
+    if (!empresa || !nome || !telefone || !endereco || !cep || !data || !hora || !ultimoOrcamento.itens) {
       alert('Atenção! Gere o orçamento antes e preencha os dados obrigatórios do cliente.');
       return;
     }
@@ -817,18 +828,18 @@ Telefone: ${telefone}
 *Informações de Pagamento:*
 
 *💳 Parcelamento no cartão de crédito*
-1x de R$ ${ultimoOrcamento.valor1.toFixed(2)}
-2x de R$ ${ultimoOrcamento.valor2.toFixed(2)}
-3x de R$ ${ultimoOrcamento.valor3.toFixed(2)}
-4x de R$ ${ultimoOrcamento.valor4.toFixed(2)}
-5x de R$ ${ultimoOrcamento.valor5.toFixed(2)}
+1x de R$ ${Number(ultimoOrcamento.valor1).toFixed(2)}
+2x de R$ ${Number(ultimoOrcamento.valor2).toFixed(2)}
+3x de R$ ${Number(ultimoOrcamento.valor3).toFixed(2)}
+4x de R$ ${Number(ultimoOrcamento.valor4).toFixed(2)}
+5x de R$ ${Number(ultimoOrcamento.valor5).toFixed(2)}
 
 *💰 À vista:*
-R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
+R$ ${Number(ultimoOrcamento.total).toFixed(2)} no PIX ou dinheiro`;
 
   document.getElementById('mensagem-agendamento').value = texto;
 
-  salvarAgendamento(nome, cpf, telefone, endereco, data, hora, ultimoOrcamento, linkMaps);
+  salvarAgendamento(empresa, nome, cpf, telefone, endereco, data, hora, ultimoOrcamento, linkMaps);
   }
 
   function formatarCEP(event) {
@@ -1087,7 +1098,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
             <div class="card-header bg-success text-white rounded-top-4 d-flex justify-content-between align-items-center">
             <div>
             <i class="bi bi-calendar-event"></i>
-            <strong> ${data.toLocaleDateString('pt-BR')}</strong> às <strong>${item.horario} ( ${diasSemana[data.getDay()]} )</strong>
+            <strong> ${data.toLocaleDateString('pt-BR')}</strong> às <strong>${item.horario} ( ${diasSemana[data.getDay()]} )     |     ${item.empresa || ""}</strong>
           </div>
         </div>
 
@@ -1200,31 +1211,31 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
             <div class="list-group list-group-flush border rounded-3">
               <div class="list-group-item d-flex justify-content-between">
                 <span>1x</span>
-                <strong>R$ ${item.orcamento.valor1.toFixed(2)}</strong>
+                <strong>R$ ${Number(item.orcamento.valor1).toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor1 * 1).toFixed(2)}</strong><span>
               </div>
 
               <div class="list-group-item d-flex justify-content-between">
                 <span>2x</span>
-                <strong>R$ ${item.orcamento.valor2.toFixed(2)}</strong>
+                <strong>R$ ${Number(item.orcamento.valor2).toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor2 * 2).toFixed(2)}</strong><span>
               </div>
 
               <div class="list-group-item d-flex justify-content-between">
                 <span>3x</span>
-                <strong>R$ ${item.orcamento.valor3.toFixed(2)}</strong>
+                <strong>R$ ${Number(item.orcamento.valor3).toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor3 * 3).toFixed(2)}</strong><span>
               </div>
 
               <div class="list-group-item d-flex justify-content-between">
                 <span>4x</span>
-                <strong>R$ ${item.orcamento.valor4.toFixed(2)}</strong>
+                <strong>R$ ${Number(item.orcamento.valor4).toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor4 * 4).toFixed(2)}</strong><span>
               </div>
 
               <div class="list-group-item d-flex justify-content-between">
                 <span>5x</span>
-                <strong>R$ ${item.orcamento.valor5.toFixed(2)}</strong>
+                <strong>R$ ${Number(item.orcamento.valor5).toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor5 * 5).toFixed(2)}</strong><span>
               </div>
             </div>
@@ -1238,7 +1249,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
             </div>
 
             <div class="display-6 fw-bold">
-              R$ ${item.orcamento.total.toFixed(2)}
+              R$ ${Number(item.orcamento.total).toFixed(2)}
             </div>
 
             <small>PIX ou Dinheiro</small>
@@ -1266,9 +1277,9 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     });
   }
 
-  async function salvarAgendamento(nome, cpf, telefone, endereco, data, hora, orcamento, linkMaps) {
+  async function salvarAgendamento(empresa, nome, cpf, telefone, endereco, data, hora, orcamento, linkMaps) {
 
-    const { data: novoAgendamento, error } = await supabaseClient.from('agenda').insert({nome,cpf,telefone,endereco,data,horario: hora,orcamento,link_maps: linkMaps}).select().single();
+    const { data: novoAgendamento, error } = await supabaseClient.from('agenda').insert({empresa,nome,cpf,telefone,endereco,data,horario: hora,orcamento,link_maps: linkMaps}).select().single();
 
     if (error) {
       console.error(error);
@@ -1491,7 +1502,7 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     document.getElementById('editHorario').value = item.horario || '';
 
     document.getElementById('editItens').value = item.orcamento?.itens || '';
-    document.getElementById('editTotal').value = item.orcamento?.total.toFixed(2) || 0;
+    document.getElementById('editTotal').value = Number(item.orcamento?.total).toFixed(2) || 0;
 
     const modal = new bootstrap.Modal(document.getElementById('modalEditarAgenda'));
 

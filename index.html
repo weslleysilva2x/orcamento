@@ -370,17 +370,17 @@
 
           <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <label class="form-label">Nome</label>
+              <label class="form-label">Nome:</label>
               <input type="text" id="editNome" class="form-control">
             </div>
 
             <div class="col-md-3">
-              <label class="form-label">CPF</label>
+              <label class="form-label">CPF:</label>
               <input type="text" id="editCPF" class="form-control" maxlength="14" oninput="formatarCPF(event)">
             </div>
 
             <div class="col-md-3">
-              <label class="form-label">Telefone</label>
+              <label class="form-label">Telefone:</label>
               <input type="text" id="editTelefone" class="form-control" maxlength="15" oninput="formatarTelefone(event)">
             </div>
           </div>
@@ -393,12 +393,12 @@
 
           <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <label class="form-label">Data</label>
+              <label class="form-label">Data:</label>
               <input type="date" id="editData" class="form-control">
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Horário</label>
+              <label class="form-label">Horário:</label>
               <select id="editHorario" class="form-select">
                 <option value="08:00">08:00</option>
                 <option value="08:30">08:30</option>
@@ -439,40 +439,15 @@
           </h5>
 
           <div class="mb-3">
-            <label class="form-label">Itens</label>
+            <label class="form-label">Itens:</label>
             <textarea id="editItens" class="form-control" rows="5"></textarea>
           </div>
 
           <div class="row g-3">
             <div class="col-md-4">
-              <label class="form-label">Valor à vista</label>
+              <label class="form-label">Valor à vista:</label>
               <input type="number" id="editTotal" class="form-control" step="0.01">
-            </div>
-            
-            <div class="col-md-4">
-              <label class="form-label">1x</label>
-              <input type="number" id="editValor1" class="form-control" step="0.01">
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">2x</label>
-              <input type="number" id="editValor2" class="form-control" step="0.01">
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">3x</label>
-              <input type="number" id="editValor3" class="form-control" step="0.01">
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">4x</label>
-              <input type="number" id="editValor4" class="form-control" step="0.01">
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">5x</label>
-              <input type="number" id="editValor5" class="form-control" step="0.01">
-            </div>
+            </div>            
           </div>
         </div>
 
@@ -480,7 +455,7 @@
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           <button type="button" class="btn btn-success" onclick="salvarEdicaoAgenda()">
             <i class="bi bi-save"></i>
-            Salvar Alterações
+            Salvar
           </button>
         </div>
       </div>
@@ -762,11 +737,11 @@ Nosso objetivo é simples: entregar *qualidade*, *segurança* e um *resultado* q
 ${itensSelecionados}
 
 💳 *Parcelamento no cartão de crédito*
-1x de R$ ${valor1}
-2x de R$ ${valor2}
-3x de R$ ${valor3}
-4x de R$ ${valor4}
-5x de R$ ${valor5}
+1x de R$ ${valor1.toFixed(2)}
+2x de R$ ${valor2.toFixed(2)}
+3x de R$ ${valor3.toFixed(2)}
+4x de R$ ${valor4.toFixed(2)}
+5x de R$ ${valor5.toFixed(2)}
 
 💰 *Oferta à vista*
 R$ ${total.toFixed(2)} no PIX ou dinheiro`;
@@ -792,7 +767,7 @@ R$ ${total.toFixed(2)} no PIX ou dinheiro`;
     const texto =
 `Para prosseguirmos com o agendamento, por favor, nos envie as seguintes informações:
 
-Nome completo:
+Nome:
 CPF:
 Endereço completo:
 CEP:
@@ -842,11 +817,11 @@ Telefone: ${telefone}
 *Informações de Pagamento:*
 
 *💳 Parcelamento no cartão de crédito*
-1x de R$ ${ultimoOrcamento.valor1}
-2x de R$ ${ultimoOrcamento.valor2}
-3x de R$ ${ultimoOrcamento.valor3}
-4x de R$ ${ultimoOrcamento.valor4}
-5x de R$ ${ultimoOrcamento.valor5}
+1x de R$ ${ultimoOrcamento.valor1.toFixed(2)}
+2x de R$ ${ultimoOrcamento.valor2.toFixed(2)}
+3x de R$ ${ultimoOrcamento.valor3.toFixed(2)}
+4x de R$ ${ultimoOrcamento.valor4.toFixed(2)}
+5x de R$ ${ultimoOrcamento.valor5.toFixed(2)}
 
 *💰 À vista:*
 R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
@@ -1225,31 +1200,31 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
             <div class="list-group list-group-flush border rounded-3">
               <div class="list-group-item d-flex justify-content-between">
                 <span>1x</span>
-                <strong>R$ ${item.orcamento.valor1}</strong>
+                <strong>R$ ${item.orcamento.valor1.toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor1 * 1).toFixed(2)}</strong><span>
               </div>
 
               <div class="list-group-item d-flex justify-content-between">
                 <span>2x</span>
-                <strong>R$ ${item.orcamento.valor2}</strong>
+                <strong>R$ ${item.orcamento.valor2.toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor2 * 2).toFixed(2)}</strong><span>
               </div>
 
               <div class="list-group-item d-flex justify-content-between">
                 <span>3x</span>
-                <strong>R$ ${item.orcamento.valor3}</strong>
+                <strong>R$ ${item.orcamento.valor3.toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor3 * 3).toFixed(2)}</strong><span>
               </div>
 
               <div class="list-group-item d-flex justify-content-between">
                 <span>4x</span>
-                <strong>R$ ${item.orcamento.valor4}</strong>
+                <strong>R$ ${item.orcamento.valor4.toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor4 * 4).toFixed(2)}</strong><span>
               </div>
 
               <div class="list-group-item d-flex justify-content-between">
                 <span>5x</span>
-                <strong>R$ ${item.orcamento.valor5}</strong>
+                <strong>R$ ${item.orcamento.valor5.toFixed(2)}</strong>
                 <span>Total: <strong>R$ ${(item.orcamento.valor5 * 5).toFixed(2)}</strong><span>
               </div>
             </div>
@@ -1515,16 +1490,8 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     document.getElementById('editData').value = item.data || '';
     document.getElementById('editHorario').value = item.horario || '';
 
-
-    // ORÇAMENTO
-
     document.getElementById('editItens').value = item.orcamento?.itens || '';
-    document.getElementById('editTotal').value = item.orcamento?.total || '';
-    document.getElementById('editValor1').value = item.orcamento?.valor1 || '';
-    document.getElementById('editValor2').value = item.orcamento?.valor2 || '';
-    document.getElementById('editValor3').value = item.orcamento?.valor3 || '';
-    document.getElementById('editValor4').value = item.orcamento?.valor4 || '';
-    document.getElementById('editValor5').value = item.orcamento?.valor5 || '';
+    document.getElementById('editTotal').value = item.orcamento?.total.toFixed(2) || 0;
 
     const modal = new bootstrap.Modal(document.getElementById('modalEditarAgenda'));
 
@@ -1541,15 +1508,17 @@ R$ ${ultimoOrcamento.total.toFixed(2)} no PIX ou dinheiro`;
     const data = document.getElementById('editData').value;
     const horario = document.getElementById('editHorario').value;
 
+    const total = parseFloat(document.getElementById('editTotal').value) || 0
+
     const orcamento = {
       itens: document.getElementById('editItens').value.trim(),
-      total: parseFloat(document.getElementById('editTotal').value) || 0,
+      total: total,
 
-      valor1: parseFloat(document.getElementById('editValor1').value) || 0,
-      valor2: parseFloat(document.getElementById('editValor2').value) || 0,
-      valor3: parseFloat(document.getElementById('editValor3').value) || 0,
-      valor4: parseFloat(document.getElementById('editValor4').value) || 0,
-      valor5: parseFloat(document.getElementById('editValor5').value) || 0
+      valor1: calcularValor(total, 1),
+      valor2: calcularValor(total, 2),
+      valor3: calcularValor(total, 3),
+      valor4: calcularValor(total, 4),
+      valor5: calcularValor(total, 5),
     };
 
     const { error } = await supabaseClient.from('agenda').update({
